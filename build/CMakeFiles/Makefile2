@@ -68,6 +68,8 @@ all: CMakeFiles/scan_test.dir/all
 all: CMakeFiles/feedback_test.dir/all
 all: CMakeFiles/control_test.dir/all
 all: CMakeFiles/motor_studio.dir/all
+all: CMakeFiles/showcase_single.dir/all
+all: CMakeFiles/showcase_all.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
@@ -76,6 +78,8 @@ codegen: CMakeFiles/scan_test.dir/codegen
 codegen: CMakeFiles/feedback_test.dir/codegen
 codegen: CMakeFiles/control_test.dir/codegen
 codegen: CMakeFiles/motor_studio.dir/codegen
+codegen: CMakeFiles/showcase_single.dir/codegen
+codegen: CMakeFiles/showcase_all.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -88,6 +92,8 @@ clean: CMakeFiles/scan_test.dir/clean
 clean: CMakeFiles/feedback_test.dir/clean
 clean: CMakeFiles/control_test.dir/clean
 clean: CMakeFiles/motor_studio.dir/clean
+clean: CMakeFiles/showcase_single.dir/clean
+clean: CMakeFiles/showcase_all.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -249,6 +255,70 @@ CMakeFiles/motor_studio.dir/codegen:
 CMakeFiles/motor_studio.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_studio.dir/build.make CMakeFiles/motor_studio.dir/clean
 .PHONY : CMakeFiles/motor_studio.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/showcase_single.dir
+
+# All Build rule for target.
+CMakeFiles/showcase_single.dir/all: CMakeFiles/gr0x_motor.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_single.dir/build.make CMakeFiles/showcase_single.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_single.dir/build.make CMakeFiles/showcase_single.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=15,16 "Built target showcase_single"
+.PHONY : CMakeFiles/showcase_single.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/showcase_single.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 6
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/showcase_single.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 0
+.PHONY : CMakeFiles/showcase_single.dir/rule
+
+# Convenience name for target.
+showcase_single: CMakeFiles/showcase_single.dir/rule
+.PHONY : showcase_single
+
+# codegen rule for target.
+CMakeFiles/showcase_single.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_single.dir/build.make CMakeFiles/showcase_single.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=15,16 "Finished codegen for target showcase_single"
+.PHONY : CMakeFiles/showcase_single.dir/codegen
+
+# clean rule for target.
+CMakeFiles/showcase_single.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_single.dir/build.make CMakeFiles/showcase_single.dir/clean
+.PHONY : CMakeFiles/showcase_single.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/showcase_all.dir
+
+# All Build rule for target.
+CMakeFiles/showcase_all.dir/all: CMakeFiles/gr0x_motor.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_all.dir/build.make CMakeFiles/showcase_all.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_all.dir/build.make CMakeFiles/showcase_all.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=13,14 "Built target showcase_all"
+.PHONY : CMakeFiles/showcase_all.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/showcase_all.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 6
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/showcase_all.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 0
+.PHONY : CMakeFiles/showcase_all.dir/rule
+
+# Convenience name for target.
+showcase_all: CMakeFiles/showcase_all.dir/rule
+.PHONY : showcase_all
+
+# codegen rule for target.
+CMakeFiles/showcase_all.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_all.dir/build.make CMakeFiles/showcase_all.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=13,14 "Finished codegen for target showcase_all"
+.PHONY : CMakeFiles/showcase_all.dir/codegen
+
+# clean rule for target.
+CMakeFiles/showcase_all.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_all.dir/build.make CMakeFiles/showcase_all.dir/clean
+.PHONY : CMakeFiles/showcase_all.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

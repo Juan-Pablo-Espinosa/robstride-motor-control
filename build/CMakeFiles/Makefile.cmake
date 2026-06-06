@@ -61,4 +61,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/feedback_test.dir/DependInfo.cmake"
   "CMakeFiles/control_test.dir/DependInfo.cmake"
   "CMakeFiles/motor_studio.dir/DependInfo.cmake"
+  "CMakeFiles/showcase_single.dir/DependInfo.cmake"
+  "CMakeFiles/showcase_all.dir/DependInfo.cmake"
   )

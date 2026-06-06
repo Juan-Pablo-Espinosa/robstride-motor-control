@@ -181,6 +181,32 @@ motor_studio/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_studio.dir/build.make CMakeFiles/motor_studio.dir/build
 .PHONY : motor_studio/fast
 
+#=============================================================================
+# Target rules for targets named showcase_single
+
+# Build rule for target.
+showcase_single: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 showcase_single
+.PHONY : showcase_single
+
+# fast build rule for target.
+showcase_single/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_single.dir/build.make CMakeFiles/showcase_single.dir/build
+.PHONY : showcase_single/fast
+
+#=============================================================================
+# Target rules for targets named showcase_all
+
+# Build rule for target.
+showcase_all: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 showcase_all
+.PHONY : showcase_all
+
+# fast build rule for target.
+showcase_all/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_all.dir/build.make CMakeFiles/showcase_all.dir/build
+.PHONY : showcase_all/fast
+
 examples/motor_studio.o: examples/motor_studio.cpp.o
 .PHONY : examples/motor_studio.o
 
@@ -204,6 +230,54 @@ examples/motor_studio.s: examples/motor_studio.cpp.s
 examples/motor_studio.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_studio.dir/build.make CMakeFiles/motor_studio.dir/examples/motor_studio.cpp.s
 .PHONY : examples/motor_studio.cpp.s
+
+examples/showcase_all.o: examples/showcase_all.cpp.o
+.PHONY : examples/showcase_all.o
+
+# target to build an object file
+examples/showcase_all.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_all.dir/build.make CMakeFiles/showcase_all.dir/examples/showcase_all.cpp.o
+.PHONY : examples/showcase_all.cpp.o
+
+examples/showcase_all.i: examples/showcase_all.cpp.i
+.PHONY : examples/showcase_all.i
+
+# target to preprocess a source file
+examples/showcase_all.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_all.dir/build.make CMakeFiles/showcase_all.dir/examples/showcase_all.cpp.i
+.PHONY : examples/showcase_all.cpp.i
+
+examples/showcase_all.s: examples/showcase_all.cpp.s
+.PHONY : examples/showcase_all.s
+
+# target to generate assembly for a file
+examples/showcase_all.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_all.dir/build.make CMakeFiles/showcase_all.dir/examples/showcase_all.cpp.s
+.PHONY : examples/showcase_all.cpp.s
+
+examples/showcase_single.o: examples/showcase_single.cpp.o
+.PHONY : examples/showcase_single.o
+
+# target to build an object file
+examples/showcase_single.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_single.dir/build.make CMakeFiles/showcase_single.dir/examples/showcase_single.cpp.o
+.PHONY : examples/showcase_single.cpp.o
+
+examples/showcase_single.i: examples/showcase_single.cpp.i
+.PHONY : examples/showcase_single.i
+
+# target to preprocess a source file
+examples/showcase_single.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_single.dir/build.make CMakeFiles/showcase_single.dir/examples/showcase_single.cpp.i
+.PHONY : examples/showcase_single.cpp.i
+
+examples/showcase_single.s: examples/showcase_single.cpp.s
+.PHONY : examples/showcase_single.s
+
+# target to generate assembly for a file
+examples/showcase_single.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_single.dir/build.make CMakeFiles/showcase_single.dir/examples/showcase_single.cpp.s
+.PHONY : examples/showcase_single.cpp.s
 
 src/motor_bus.o: src/motor_bus.cpp.o
 .PHONY : src/motor_bus.o
@@ -362,9 +436,17 @@ help:
 	@echo "... gr0x_motor"
 	@echo "... motor_studio"
 	@echo "... scan_test"
+	@echo "... showcase_all"
+	@echo "... showcase_single"
 	@echo "... examples/motor_studio.o"
 	@echo "... examples/motor_studio.i"
 	@echo "... examples/motor_studio.s"
+	@echo "... examples/showcase_all.o"
+	@echo "... examples/showcase_all.i"
+	@echo "... examples/showcase_all.s"
+	@echo "... examples/showcase_single.o"
+	@echo "... examples/showcase_single.i"
+	@echo "... examples/showcase_single.s"
 	@echo "... src/motor_bus.o"
 	@echo "... src/motor_bus.i"
 	@echo "... src/motor_bus.s"
