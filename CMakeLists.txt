@@ -48,3 +48,9 @@ find_package(Curses REQUIRED)
 add_executable(motor_studio examples/motor_studio.cpp)
 target_link_libraries(motor_studio PRIVATE gr0x_motor ${CURSES_LIBRARIES})
 target_include_directories(motor_studio PRIVATE ${CURSES_INCLUDE_DIR})
+
+add_executable(showcase_single examples/showcase_single.cpp)
+target_link_libraries(showcase_single PRIVATE gr0x_motor)
+
+add_executable(showcase_all examples/showcase_all.cpp)
+target_link_libraries(showcase_all PRIVATE gr0x_motor)

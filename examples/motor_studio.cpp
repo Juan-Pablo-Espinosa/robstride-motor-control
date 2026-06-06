@@ -146,6 +146,10 @@ bool handleCommand(const std::string& line, MotorBus& bus) {
     } else if (cmd == "vel") {
         if (g_sel == 0) { printf("No motor selected.\n"); return true; }
         float val; ss >> val;
+        // MIT velocity field is feedforward only, not a velocity setpoint.
+        // With kp=0 the motor will resist motion but not actively drive.
+        // True velocity control (PARAM_SPD_REF) is not yet implemented.
+        // Use 'pos' with incremental targets for motion, or wait for item 7.
         MotorTarget t;
         t.angle    = 0.0f;
         t.velocity = val;
@@ -153,7 +157,8 @@ bool handleCommand(const std::string& line, MotorBus& bus) {
         t.kd       = g_kd;
         t.torque   = 0.0f;
         bus.setTarget(g_sel, t);
-        printf("Motor %d -> vel %.3f rad/s  (kd=%.2f)\n", g_sel, val, g_kd);
+        printf("Motor %d -> vel feedforward %.3f rad/s (kd=%.2f)\n", g_sel, val, g_kd);
+        printf("WARNING: MIT vel is feedforward only. Motor won't spin freely. Item 7 adds real speed mode.\n");
 
     } else if (cmd == "kp") {
         ss >> g_kp;

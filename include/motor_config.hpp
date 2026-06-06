@@ -88,6 +88,11 @@ struct MotorConfig {
     // Must be <= model hardware max. Defaults to hardware max.
     float max_torque = -1.0f;    // -1 means "use hardware limit"
 
+    // --- Acceleration limit (rad/s²) ---
+    // Limits how fast the interpolated target angle moves each cycle.
+    // -1.0 = unlimited (passthrough, no ramp). Recommended: 5-20 rad/s² for joints.
+    float max_acceleration = -1.0f;
+
     // --- Direction inversion ---
     // Set to true for motors mounted mirrored (e.g. left vs right leg).
     // Inverts angle commands and feedback signs transparently.

@@ -10,7 +10,12 @@ MotorBus::MotorBus(Transport& transport, int hz)
     : transport_(transport), hz_(hz) {}
 
 MotorBus::~MotorBus() {
-    stop();
+    // emergencyStop sets running_=false without joining.
+    // We then join here safely — destructor is not a signal handler.
+    emergencyStop();
+    if (control_thread_.joinable()) {
+        control_thread_.join();
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -85,7 +90,18 @@ bool MotorBus::enable(uint8_t id) {
     auto it = motors_.find(id);
     if (it == motors_.end()) return false;
     bool ok = it->second.motor.enable();
-    if (ok) it->second.enabled = true;
+        if (ok) {
+            it->second.enabled = true;
+            // Immediately populate state so getState() after enable() is never stale zeros.
+            // enable() already got a feedback frame — request one more to fill entry.state.
+            it->second.motor.requestFeedback(it->second.state);
+            // Seed the acceleration ramp from the motor's actual position.
+            // This prevents the ramp from driving the motor from 0 to its real position
+            // on the first control cycle after arming.
+            it->second.interpolated_angle      = it->second.state.angle;
+            it->second.prev_interpolated_angle = it->second.state.angle;
+            it->second.ramp_initialized        = true;
+        }
     return ok;
 }
 
@@ -103,6 +119,10 @@ void MotorBus::enableAll() {
     for (auto& [id, entry] : motors_) {
         if (entry.motor.enable()) {
             entry.enabled = true;
+            entry.motor.requestFeedback(entry.state);
+            entry.interpolated_angle      = entry.state.angle;
+            entry.prev_interpolated_angle = entry.state.angle;
+            entry.ramp_initialized        = true;
         }
     }
 }
@@ -116,11 +136,24 @@ void MotorBus::disableAll() {
 }
 
 // ---------------------------------------------------------------------------
+// Emergency stop
+//
+// Async-signal-safe: only writes to atomics, no malloc, no mutex, no I/O.
+// The control loop polls estop_ at the top of every cycle and handles the
+// actual COMM_STOP sends from the loop thread where the mutex is safe to use.
+// ---------------------------------------------------------------------------
+void MotorBus::emergencyStop() {
+    estop_   = true;
+    running_ = false;
+}
+
+// ---------------------------------------------------------------------------
 // Control thread
 // ---------------------------------------------------------------------------
 
 void MotorBus::start() {
     if (running_) return;
+    estop_   = false;   // clear any previous estop before starting
     running_ = true;
     control_thread_ = std::thread(&MotorBus::controlLoop, this);
 }
@@ -131,7 +164,7 @@ void MotorBus::stop() {
     if (control_thread_.joinable()) {
         control_thread_.join();
     }
-    // Safe shutdown — disable all motors after thread exits
+    // Graceful shutdown — disable all motors after thread exits cleanly
     disableAll();
 }
 
@@ -142,28 +175,66 @@ void MotorBus::controlLoop() {
     const auto period = std::chrono::microseconds(1000000 / hz_);
     auto next_wake    = clock::now();
 
-    // For measuring actual loop rate
-    auto   rate_window_start = clock::now();
-    int    rate_cycles        = 0;
+    auto rate_window_start = clock::now();
+    int  rate_cycles       = 0;
 
     while (running_) {
-        // cycle_start reserved for future jitter monitoring
-        (void)clock::now();
+
+        // --- Emergency stop check ---
+        // Checked first, before acquiring the mutex or touching CAN.
+        // estop_ is set by emergencyStop() which may be called from a signal
+        // handler. We handle it here in the loop thread where mutex is safe.
+        if (estop_) {
+            std::lock_guard<std::mutex> lock(mutex_);
+            for (auto& [id, entry] : motors_) {
+                if (entry.enabled) {
+                    entry.motor.disable(false);
+                    entry.enabled = false;
+                }
+            }
+            // running_ was already set false by emergencyStop()
+            break;
+        }
 
         // --- Send MIT commands and read feedback for all enabled motors ---
         {
+            const float dt = 1.0f / static_cast<float>(hz_);
+
             std::lock_guard<std::mutex> lock(mutex_);
             for (auto& [id, entry] : motors_) {
                 if (!entry.enabled) continue;
 
                 const MotorTarget& t = entry.target;
+                const float max_accel = entry.motor.config().max_acceleration;
 
-                // Send MIT command
-                entry.motor.sendMIT(
-                    t.angle, t.velocity, t.kp, t.kd, t.torque);
+                float cmd_angle;
+                float cmd_vel;
 
-                // Read feedback — non-blocking with short timeout
-                // If motor misses a cycle that's ok, state stays stale
+                if (max_accel < 0.0f || !entry.ramp_initialized) {
+                    // Unlimited / passthrough — use target directly
+                    cmd_angle = t.angle;
+                    cmd_vel   = t.velocity;
+                } else {
+                    // Acceleration-limited ramp
+                    const float max_step = max_accel * dt;  // rad per cycle
+                    const float error    = t.angle - entry.interpolated_angle;
+
+                    entry.prev_interpolated_angle = entry.interpolated_angle;
+
+                    if (error > max_step) {
+                        entry.interpolated_angle += max_step;
+                    } else if (error < -max_step) {
+                        entry.interpolated_angle -= max_step;
+                    } else {
+                        entry.interpolated_angle = t.angle;
+                    }
+
+                    // Feedforward velocity = how fast we're moving the interpolated target
+                    cmd_vel   = (entry.interpolated_angle - entry.prev_interpolated_angle) / dt;
+                    cmd_angle = entry.interpolated_angle;
+                }
+
+                entry.motor.sendMIT(cmd_angle, cmd_vel, t.kp, t.kd, t.torque);
                 entry.motor.requestFeedback(entry.state);
             }
         }
@@ -174,8 +245,8 @@ void MotorBus::controlLoop() {
         double elapsed = duration(now - rate_window_start).count();
         if (elapsed >= 1.0) {
             measured_hz_ = static_cast<float>(rate_cycles / elapsed);
-            rate_cycles        = 0;
-            rate_window_start  = now;
+            rate_cycles       = 0;
+            rate_window_start = now;
         }
 
         // --- Sleep until next cycle ---
@@ -198,4 +269,3 @@ std::vector<uint8_t> MotorBus::motorIds() const {
     std::sort(ids.begin(), ids.end());
     return ids;
 }
-
