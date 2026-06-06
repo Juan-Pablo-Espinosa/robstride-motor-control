@@ -37,6 +37,107 @@ assign to each motor.
 
 ---
 
+## Hardware Setup (Reference Configuration)
+
+This library was developed and tested on the following hardware stack.
+Other Linux SBCs with SocketCAN should work with minimal changes.
+
+### Raspberry Pi 5
+
+- Hostname: configurable (tested as `GR0X-PI`)
+- OS: Raspberry Pi OS Bookworm 64-bit
+- Role: Low-level motor controller, runs the 200Hz CAN control loop
+- Communicates with high-level compute (Jetson AGX Thor) over Ethernet
+
+### PiCAN FD Duo Isolated HAT
+
+- Product: [PiCAN FD Duo Isolated for Raspberry Pi](https://copperhilltech.com/pican-fd-duo-isolated-for-raspberry-pi/)
+- Datasheet: [User Guide PDF](https://copperhilltech.com/content/PICAN_FD_DUO_ISO_UGB_10.pdf)
+- Controller: MCP2518FD (dual independent CAN FD channels)
+- Two CAN connectors: J1/CAN-A and J2/CAN-B
+- Galvanically isolated — safe for use with high-power actuators on separate supplies
+
+#### Kernel Interface Mapping (Important)
+
+The Linux kernel assigns interface names **opposite** to the physical connector labels:
+
+| Physical Connector | SPI Bus | Linux Interface | Use |
+|-------------------|---------|-----------------|-----|
+| J1 / CAN-A | spi0.0 | `can1` | **Motors — use this** |
+| J2 / CAN-B | spi0.1 | `can0` | Second bus (optional) |
+
+Always use `can1` for J1/CAN-A. Confirmed via device tree:
+- `mcp251xfd@0` (spi0.0) → GPIO25 interrupt → `can1`
+- `mcp251xfd@1` (spi0.1) → GPIO05 interrupt → `can0`
+
+#### `/boot/firmware/config.txt` CAN section
+
+```
+dtparam=spi=on
+dtoverlay=mcp251xfd,spi0-0,oscillator=40000000,interrupt=25
+dtoverlay=mcp251xfd,spi0-1,oscillator=40000000,interrupt=05
+```
+
+#### 120Ω CAN Termination Resistors
+
+The PiCAN FD Duo Isolated has onboard 120Ω termination resistors for each
+channel. They are **disabled by default** and must be enabled by bridging the
+solder jumpers on the board:
+
+- **JP1** — enables 120Ω termination on J1/CAN-A (your motor bus)
+- **JP2** — enables 120Ω termination on J2/CAN-B (second bus)
+
+A properly terminated CAN bus requires exactly two 120Ω resistors — one at
+each physical end of the cable. If the Pi HAT is at one end of your cable and
+the last motor is at the other end, bridge JP1 on the HAT. The last motor on
+the bus also needs its termination resistor enabled (check motor documentation
+for how to do this — on RobStride motors this is parameter `PARAM_CAN_STATUS`
+at register `0x3041`, write `0` to enable the internal 240Ω resistor, or
+bridge the motor's onboard jumper).
+
+Without proper termination you will see signal reflections and communication
+errors, especially at high motor counts or long cable runs.
+
+#### Known Bug: MCP2518FD TX FIFO Deadlock
+
+The MCP2518FD has a known Linux kernel bug where the TX FIFO deadlocks if a
+frame is sent but no node ACKs it (motor unpowered, wrong ID, wrong frame
+type). The chip enters BUS-OFF state and stops transmitting.
+
+**Recovery:**
+```bash
+sudo ip link set can1 down
+sudo ip link set can1 type can bitrate 1000000
+sudo ip link set can1 up
+```
+
+**Prevention:**
+- Always power motors before bringing up the CAN interface
+- Always use 29-bit extended frames (`CAN_EFF_FLAG`) — standard 11-bit frames
+  are not ACKed by RobStride motors and will trigger BUS-OFF immediately
+- Never use `cansend` to test RobStride motors — it cannot construct correct
+  29-bit extended frames for this protocol
+
+### Wiring
+
+```
+Raspberry Pi 5
+    └── PiCAN FD Duo ISO HAT (GPIO header)
+            └── J1/CAN-A ──────────────── CAN cable (twisted pair, shielded)
+                    │
+                    ├── Motor ID 1  (RS-03)
+                    ├── Motor ID 2  (RS-03)
+                    ├── ...
+                    └── Motor ID N  (RS-03/04)  ← 120Ω terminator here
+```
+
+- Max recommended motors per bus: 20 (tested configuration)
+- Cable: use proper twisted-pair CAN cable, not dupont wires for final deploy
+- Motor power: separate 24–48V supply, star-grounded topology recommended
+- **Never power motors from the Raspberry Pi — always use a separate supply**
+
+---
+
 ## Dependencies
 
 ```bash
