@@ -1,0 +1,11 @@
+build/
+install/
+log/
+.colcon_ignore
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+.vscode/settings.json
+.DS_Store
+Thumbs.db
