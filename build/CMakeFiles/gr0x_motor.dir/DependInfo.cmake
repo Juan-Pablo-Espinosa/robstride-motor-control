@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/gr0x-pi/gr0x-motor/src/motor_bus.cpp" "CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o" "gcc" "CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o.d"
   "/home/gr0x-pi/gr0x-motor/src/robstride_motor.cpp" "CMakeFiles/gr0x_motor.dir/src/robstride_motor.cpp.o" "gcc" "CMakeFiles/gr0x_motor.dir/src/robstride_motor.cpp.o.d"
   "/home/gr0x-pi/gr0x-motor/src/socketcan_transport.cpp" "CMakeFiles/gr0x_motor.dir/src/socketcan_transport.cpp.o" "gcc" "CMakeFiles/gr0x_motor.dir/src/socketcan_transport.cpp.o.d"
   )

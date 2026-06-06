@@ -100,19 +100,35 @@ CMakeFiles/gr0x_motor.dir/src/robstride_motor.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/gr0x_motor.dir/src/robstride_motor.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gr0x-pi/gr0x-motor/src/robstride_motor.cpp -o CMakeFiles/gr0x_motor.dir/src/robstride_motor.cpp.s
 
+CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o: CMakeFiles/gr0x_motor.dir/flags.make
+CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o: /home/gr0x-pi/gr0x-motor/src/motor_bus.cpp
+CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o: CMakeFiles/gr0x_motor.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o -MF CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o.d -o CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o -c /home/gr0x-pi/gr0x-motor/src/motor_bus.cpp
+
+CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/gr0x-pi/gr0x-motor/src/motor_bus.cpp > CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.i
+
+CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gr0x-pi/gr0x-motor/src/motor_bus.cpp -o CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.s
+
 # Object files for target gr0x_motor
 gr0x_motor_OBJECTS = \
 "CMakeFiles/gr0x_motor.dir/src/socketcan_transport.cpp.o" \
-"CMakeFiles/gr0x_motor.dir/src/robstride_motor.cpp.o"
+"CMakeFiles/gr0x_motor.dir/src/robstride_motor.cpp.o" \
+"CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o"
 
 # External object files for target gr0x_motor
 gr0x_motor_EXTERNAL_OBJECTS =
 
 libgr0x_motor.a: CMakeFiles/gr0x_motor.dir/src/socketcan_transport.cpp.o
 libgr0x_motor.a: CMakeFiles/gr0x_motor.dir/src/robstride_motor.cpp.o
+libgr0x_motor.a: CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o
 libgr0x_motor.a: CMakeFiles/gr0x_motor.dir/build.make
 libgr0x_motor.a: CMakeFiles/gr0x_motor.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libgr0x_motor.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX static library libgr0x_motor.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/gr0x_motor.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/gr0x_motor.dir/link.txt --verbose=$(VERBOSE)
 

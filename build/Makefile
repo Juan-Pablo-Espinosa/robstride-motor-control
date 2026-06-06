@@ -168,6 +168,67 @@ control_test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/control_test.dir/build.make CMakeFiles/control_test.dir/build
 .PHONY : control_test/fast
 
+#=============================================================================
+# Target rules for targets named motor_studio
+
+# Build rule for target.
+motor_studio: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 motor_studio
+.PHONY : motor_studio
+
+# fast build rule for target.
+motor_studio/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_studio.dir/build.make CMakeFiles/motor_studio.dir/build
+.PHONY : motor_studio/fast
+
+examples/motor_studio.o: examples/motor_studio.cpp.o
+.PHONY : examples/motor_studio.o
+
+# target to build an object file
+examples/motor_studio.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_studio.dir/build.make CMakeFiles/motor_studio.dir/examples/motor_studio.cpp.o
+.PHONY : examples/motor_studio.cpp.o
+
+examples/motor_studio.i: examples/motor_studio.cpp.i
+.PHONY : examples/motor_studio.i
+
+# target to preprocess a source file
+examples/motor_studio.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_studio.dir/build.make CMakeFiles/motor_studio.dir/examples/motor_studio.cpp.i
+.PHONY : examples/motor_studio.cpp.i
+
+examples/motor_studio.s: examples/motor_studio.cpp.s
+.PHONY : examples/motor_studio.s
+
+# target to generate assembly for a file
+examples/motor_studio.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_studio.dir/build.make CMakeFiles/motor_studio.dir/examples/motor_studio.cpp.s
+.PHONY : examples/motor_studio.cpp.s
+
+src/motor_bus.o: src/motor_bus.cpp.o
+.PHONY : src/motor_bus.o
+
+# target to build an object file
+src/motor_bus.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gr0x_motor.dir/build.make CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o
+.PHONY : src/motor_bus.cpp.o
+
+src/motor_bus.i: src/motor_bus.cpp.i
+.PHONY : src/motor_bus.i
+
+# target to preprocess a source file
+src/motor_bus.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gr0x_motor.dir/build.make CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.i
+.PHONY : src/motor_bus.cpp.i
+
+src/motor_bus.s: src/motor_bus.cpp.s
+.PHONY : src/motor_bus.s
+
+# target to generate assembly for a file
+src/motor_bus.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gr0x_motor.dir/build.make CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.s
+.PHONY : src/motor_bus.cpp.s
+
 src/robstride_motor.o: src/robstride_motor.cpp.o
 .PHONY : src/robstride_motor.o
 
@@ -299,7 +360,14 @@ help:
 	@echo "... control_test"
 	@echo "... feedback_test"
 	@echo "... gr0x_motor"
+	@echo "... motor_studio"
 	@echo "... scan_test"
+	@echo "... examples/motor_studio.o"
+	@echo "... examples/motor_studio.i"
+	@echo "... examples/motor_studio.s"
+	@echo "... src/motor_bus.o"
+	@echo "... src/motor_bus.i"
+	@echo "... src/motor_bus.s"
 	@echo "... src/robstride_motor.o"
 	@echo "... src/robstride_motor.i"
 	@echo "... src/robstride_motor.s"

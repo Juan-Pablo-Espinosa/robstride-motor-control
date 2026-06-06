@@ -123,7 +123,9 @@ CMakeFiles/scan_test.dir/test/scan_test.cpp.o: \
  /usr/include/c++/14/bits/uses_allocator.h \
  /usr/include/c++/14/bits/uses_allocator_args.h /usr/include/c++/14/tuple \
  /home/gr0x-pi/gr0x-motor/include/robstride_motor.hpp \
- /usr/include/c++/14/vector /usr/include/c++/14/bits/stl_uninitialized.h \
+ /home/gr0x-pi/gr0x-motor/include/motor_config.hpp \
+ /usr/include/c++/14/limits /usr/include/c++/14/vector \
+ /usr/include/c++/14/bits/stl_uninitialized.h \
  /usr/include/c++/14/bits/stl_vector.h \
  /usr/include/c++/14/bits/stl_bvector.h \
  /usr/include/c++/14/bits/vector.tcc

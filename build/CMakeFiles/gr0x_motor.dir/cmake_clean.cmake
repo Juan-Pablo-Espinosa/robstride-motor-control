@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o"
+  "CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o.d"
   "CMakeFiles/gr0x_motor.dir/src/robstride_motor.cpp.o"
   "CMakeFiles/gr0x_motor.dir/src/robstride_motor.cpp.o.d"
   "CMakeFiles/gr0x_motor.dir/src/socketcan_transport.cpp.o"

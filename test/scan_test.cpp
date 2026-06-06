@@ -11,6 +11,7 @@
 
 #include "socketcan_transport.hpp"
 #include "robstride_motor.hpp"
+#include "motor_config.hpp"
 #include <cstdio>
 
 int main() {
@@ -27,7 +28,7 @@ int main() {
 
     // Motor ID doesn't matter for scan — we probe all IDs
     // Using ID 1 as placeholder; scan() overrides it internally
-    RobstrideMotor motor(transport, 1);
+    RobstrideMotor motor(transport, 1, MotorConfig{});
 
     printf("Scanning IDs 1-127...\n");
     auto found = motor.scan(1, 127);

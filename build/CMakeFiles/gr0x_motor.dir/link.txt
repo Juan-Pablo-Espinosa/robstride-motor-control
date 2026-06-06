@@ -1,2 +1,2 @@
-/usr/bin/ar qc libgr0x_motor.a CMakeFiles/gr0x_motor.dir/src/socketcan_transport.cpp.o CMakeFiles/gr0x_motor.dir/src/robstride_motor.cpp.o
+/usr/bin/ar qc libgr0x_motor.a CMakeFiles/gr0x_motor.dir/src/socketcan_transport.cpp.o CMakeFiles/gr0x_motor.dir/src/robstride_motor.cpp.o CMakeFiles/gr0x_motor.dir/src/motor_bus.cpp.o
 /usr/bin/ranlib libgr0x_motor.a

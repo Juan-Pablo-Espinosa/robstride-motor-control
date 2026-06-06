@@ -1,8 +1,7 @@
 CMakeFiles/control_test.dir/test/control_test.cpp.o: \
  /home/gr0x-pi/gr0x-motor/test/control_test.cpp \
  /usr/include/stdc-predef.h \
- /home/gr0x-pi/gr0x-motor/include/socketcan_transport.hpp \
- /home/gr0x-pi/gr0x-motor/include/transport.hpp \
+ /home/gr0x-pi/gr0x-motor/include/motor_config.hpp \
  /usr/include/c++/14/cstdint \
  /usr/include/aarch64-linux-gnu/c++/14/bits/c++config.h \
  /usr/include/aarch64-linux-gnu/c++/14/bits/os_defines.h \
@@ -123,6 +122,9 @@ CMakeFiles/control_test.dir/test/control_test.cpp.o: \
  /usr/include/c++/14/bits/memory_resource.h /usr/include/c++/14/cstddef \
  /usr/include/c++/14/bits/uses_allocator.h \
  /usr/include/c++/14/bits/uses_allocator_args.h /usr/include/c++/14/tuple \
+ /usr/include/c++/14/limits \
+ /home/gr0x-pi/gr0x-motor/include/socketcan_transport.hpp \
+ /home/gr0x-pi/gr0x-motor/include/transport.hpp \
  /home/gr0x-pi/gr0x-motor/include/robstride_motor.hpp \
  /usr/include/c++/14/vector /usr/include/c++/14/bits/stl_uninitialized.h \
  /usr/include/c++/14/bits/stl_vector.h \

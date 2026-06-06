@@ -67,6 +67,7 @@ all: CMakeFiles/gr0x_motor.dir/all
 all: CMakeFiles/scan_test.dir/all
 all: CMakeFiles/feedback_test.dir/all
 all: CMakeFiles/control_test.dir/all
+all: CMakeFiles/motor_studio.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
@@ -74,6 +75,7 @@ codegen: CMakeFiles/gr0x_motor.dir/codegen
 codegen: CMakeFiles/scan_test.dir/codegen
 codegen: CMakeFiles/feedback_test.dir/codegen
 codegen: CMakeFiles/control_test.dir/codegen
+codegen: CMakeFiles/motor_studio.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -85,6 +87,7 @@ clean: CMakeFiles/gr0x_motor.dir/clean
 clean: CMakeFiles/scan_test.dir/clean
 clean: CMakeFiles/feedback_test.dir/clean
 clean: CMakeFiles/control_test.dir/clean
+clean: CMakeFiles/motor_studio.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -94,12 +97,12 @@ clean: CMakeFiles/control_test.dir/clean
 CMakeFiles/gr0x_motor.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gr0x_motor.dir/build.make CMakeFiles/gr0x_motor.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gr0x_motor.dir/build.make CMakeFiles/gr0x_motor.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=5,6,7 "Built target gr0x_motor"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=5,6,7,8 "Built target gr0x_motor"
 .PHONY : CMakeFiles/gr0x_motor.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/gr0x_motor.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/gr0x_motor.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 0
 .PHONY : CMakeFiles/gr0x_motor.dir/rule
@@ -111,7 +114,7 @@ gr0x_motor: CMakeFiles/gr0x_motor.dir/rule
 # codegen rule for target.
 CMakeFiles/gr0x_motor.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gr0x_motor.dir/build.make CMakeFiles/gr0x_motor.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=5,6,7 "Finished codegen for target gr0x_motor"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=5,6,7,8 "Finished codegen for target gr0x_motor"
 .PHONY : CMakeFiles/gr0x_motor.dir/codegen
 
 # clean rule for target.
@@ -126,12 +129,12 @@ CMakeFiles/gr0x_motor.dir/clean:
 CMakeFiles/scan_test.dir/all: CMakeFiles/gr0x_motor.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/scan_test.dir/build.make CMakeFiles/scan_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/scan_test.dir/build.make CMakeFiles/scan_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=8,9 "Built target scan_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=11,12 "Built target scan_test"
 .PHONY : CMakeFiles/scan_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/scan_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/scan_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 0
 .PHONY : CMakeFiles/scan_test.dir/rule
@@ -143,7 +146,7 @@ scan_test: CMakeFiles/scan_test.dir/rule
 # codegen rule for target.
 CMakeFiles/scan_test.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/scan_test.dir/build.make CMakeFiles/scan_test.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=8,9 "Finished codegen for target scan_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=11,12 "Finished codegen for target scan_test"
 .PHONY : CMakeFiles/scan_test.dir/codegen
 
 # clean rule for target.
@@ -163,7 +166,7 @@ CMakeFiles/feedback_test.dir/all: CMakeFiles/gr0x_motor.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/feedback_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/feedback_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 0
 .PHONY : CMakeFiles/feedback_test.dir/rule
@@ -195,7 +198,7 @@ CMakeFiles/control_test.dir/all: CMakeFiles/gr0x_motor.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/control_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/control_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 0
 .PHONY : CMakeFiles/control_test.dir/rule
@@ -214,6 +217,38 @@ CMakeFiles/control_test.dir/codegen:
 CMakeFiles/control_test.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/control_test.dir/build.make CMakeFiles/control_test.dir/clean
 .PHONY : CMakeFiles/control_test.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/motor_studio.dir
+
+# All Build rule for target.
+CMakeFiles/motor_studio.dir/all: CMakeFiles/gr0x_motor.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_studio.dir/build.make CMakeFiles/motor_studio.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_studio.dir/build.make CMakeFiles/motor_studio.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=9,10 "Built target motor_studio"
+.PHONY : CMakeFiles/motor_studio.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/motor_studio.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 6
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/motor_studio.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 0
+.PHONY : CMakeFiles/motor_studio.dir/rule
+
+# Convenience name for target.
+motor_studio: CMakeFiles/motor_studio.dir/rule
+.PHONY : motor_studio
+
+# codegen rule for target.
+CMakeFiles/motor_studio.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_studio.dir/build.make CMakeFiles/motor_studio.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=9,10 "Finished codegen for target motor_studio"
+.PHONY : CMakeFiles/motor_studio.dir/codegen
+
+# clean rule for target.
+CMakeFiles/motor_studio.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_studio.dir/build.make CMakeFiles/motor_studio.dir/clean
+.PHONY : CMakeFiles/motor_studio.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

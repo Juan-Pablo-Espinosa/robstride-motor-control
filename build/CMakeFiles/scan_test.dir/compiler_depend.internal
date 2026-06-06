@@ -3,6 +3,7 @@
 
 CMakeFiles/scan_test.dir/test/scan_test.cpp.o
  /home/gr0x-pi/gr0x-motor/test/scan_test.cpp
+ /home/gr0x-pi/gr0x-motor/include/motor_config.hpp
  /home/gr0x-pi/gr0x-motor/include/robstride_motor.hpp
  /home/gr0x-pi/gr0x-motor/include/socketcan_transport.hpp
  /home/gr0x-pi/gr0x-motor/include/transport.hpp
@@ -133,6 +134,7 @@ CMakeFiles/scan_test.dir/test/scan_test.cpp.o
  /usr/include/c++/14/ext/type_traits.h
  /usr/include/c++/14/initializer_list
  /usr/include/c++/14/iosfwd
+ /usr/include/c++/14/limits
  /usr/include/c++/14/new
  /usr/include/c++/14/pstl/pstl_config.h
  /usr/include/c++/14/string

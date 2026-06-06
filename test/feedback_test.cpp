@@ -11,6 +11,7 @@
 // ---------------------------------------------------------------------------
 
 #include "socketcan_transport.hpp"
+#include "motor_config.hpp"
 #include "robstride_motor.hpp"
 #include <cstdio>
 #include <csignal>
@@ -43,7 +44,10 @@ int main() {
     }
 
     // RS-03 confirmed on ID 42
-    RobstrideMotor motor(transport, 42);
+    MotorConfig cfg;
+    cfg.model = MotorModel::RS03;
+    cfg.resolve();
+    RobstrideMotor motor(transport, 42, cfg);
 
     printf("Enabling motor...\n");
     if (!motor.enable()) {

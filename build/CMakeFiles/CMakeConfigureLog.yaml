@@ -294,3 +294,41 @@ events:
       Running the CXX compiler's linker: "/usr/bin/ld" "-v"
       GNU ld (GNU Binutils for Debian) 2.44
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "/usr/share/cmake-3.31/Modules/CheckCXXSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.31/Modules/FindThreads.cmake:99 (CHECK_CXX_SOURCE_COMPILES)"
+      - "/usr/share/cmake-3.31/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "CMakeLists.txt:27 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "/home/gr0x-pi/gr0x-motor/build/CMakeFiles/CMakeScratch/TryCompile-MJH25T"
+      binary: "/home/gr0x-pi/gr0x-motor/build/CMakeFiles/CMakeScratch/TryCompile-MJH25T"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: '/home/gr0x-pi/gr0x-motor/build/CMakeFiles/CMakeScratch/TryCompile-MJH25T'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_cb854/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_cb854.dir/build.make CMakeFiles/cmTC_cb854.dir/build
+        gmake[1]: Entering directory '/home/gr0x-pi/gr0x-motor/build/CMakeFiles/CMakeScratch/TryCompile-MJH25T'
+        Building CXX object CMakeFiles/cmTC_cb854.dir/src.cxx.o
+        /usr/bin/c++ -DCMAKE_HAVE_LIBC_PTHREAD  -std=c++17 -o CMakeFiles/cmTC_cb854.dir/src.cxx.o -c /home/gr0x-pi/gr0x-motor/build/CMakeFiles/CMakeScratch/TryCompile-MJH25T/src.cxx
+        Linking CXX executable cmTC_cb854
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cb854.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_cb854.dir/src.cxx.o -o cmTC_cb854
+        gmake[1]: Leaving directory '/home/gr0x-pi/gr0x-motor/build/CMakeFiles/CMakeScratch/TryCompile-MJH25T'
+        
+      exitCode: 0
+...

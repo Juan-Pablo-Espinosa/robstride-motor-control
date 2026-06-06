@@ -2,5 +2,6 @@
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/scan_test.dir
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/feedback_test.dir
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/control_test.dir
+/home/gr0x-pi/gr0x-motor/build/CMakeFiles/motor_studio.dir
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/edit_cache.dir
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/rebuild_cache.dir
