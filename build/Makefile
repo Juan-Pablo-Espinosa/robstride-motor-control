@@ -207,6 +207,19 @@ showcase_all/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_all.dir/build.make CMakeFiles/showcase_all.dir/build
 .PHONY : showcase_all/fast
 
+#=============================================================================
+# Target rules for targets named precision_demo
+
+# Build rule for target.
+precision_demo: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 precision_demo
+.PHONY : precision_demo
+
+# fast build rule for target.
+precision_demo/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/precision_demo.dir/build.make CMakeFiles/precision_demo.dir/build
+.PHONY : precision_demo/fast
+
 examples/motor_studio.o: examples/motor_studio.cpp.o
 .PHONY : examples/motor_studio.o
 
@@ -230,6 +243,30 @@ examples/motor_studio.s: examples/motor_studio.cpp.s
 examples/motor_studio.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_studio.dir/build.make CMakeFiles/motor_studio.dir/examples/motor_studio.cpp.s
 .PHONY : examples/motor_studio.cpp.s
+
+examples/precision_demo.o: examples/precision_demo.cpp.o
+.PHONY : examples/precision_demo.o
+
+# target to build an object file
+examples/precision_demo.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/precision_demo.dir/build.make CMakeFiles/precision_demo.dir/examples/precision_demo.cpp.o
+.PHONY : examples/precision_demo.cpp.o
+
+examples/precision_demo.i: examples/precision_demo.cpp.i
+.PHONY : examples/precision_demo.i
+
+# target to preprocess a source file
+examples/precision_demo.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/precision_demo.dir/build.make CMakeFiles/precision_demo.dir/examples/precision_demo.cpp.i
+.PHONY : examples/precision_demo.cpp.i
+
+examples/precision_demo.s: examples/precision_demo.cpp.s
+.PHONY : examples/precision_demo.s
+
+# target to generate assembly for a file
+examples/precision_demo.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/precision_demo.dir/build.make CMakeFiles/precision_demo.dir/examples/precision_demo.cpp.s
+.PHONY : examples/precision_demo.cpp.s
 
 examples/showcase_all.o: examples/showcase_all.cpp.o
 .PHONY : examples/showcase_all.o
@@ -435,12 +472,16 @@ help:
 	@echo "... feedback_test"
 	@echo "... gr0x_motor"
 	@echo "... motor_studio"
+	@echo "... precision_demo"
 	@echo "... scan_test"
 	@echo "... showcase_all"
 	@echo "... showcase_single"
 	@echo "... examples/motor_studio.o"
 	@echo "... examples/motor_studio.i"
 	@echo "... examples/motor_studio.s"
+	@echo "... examples/precision_demo.o"
+	@echo "... examples/precision_demo.i"
+	@echo "... examples/precision_demo.s"
 	@echo "... examples/showcase_all.o"
 	@echo "... examples/showcase_all.i"
 	@echo "... examples/showcase_all.s"

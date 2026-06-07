@@ -5,5 +5,6 @@
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/motor_studio.dir
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/showcase_single.dir
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/showcase_all.dir
+/home/gr0x-pi/gr0x-motor/build/CMakeFiles/precision_demo.dir
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/edit_cache.dir
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/rebuild_cache.dir

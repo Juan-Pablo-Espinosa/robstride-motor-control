@@ -63,4 +63,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/motor_studio.dir/DependInfo.cmake"
   "CMakeFiles/showcase_single.dir/DependInfo.cmake"
   "CMakeFiles/showcase_all.dir/DependInfo.cmake"
+  "CMakeFiles/precision_demo.dir/DependInfo.cmake"
   )
