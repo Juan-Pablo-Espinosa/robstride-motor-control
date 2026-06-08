@@ -64,4 +64,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/showcase_single.dir/DependInfo.cmake"
   "CMakeFiles/showcase_all.dir/DependInfo.cmake"
   "CMakeFiles/precision_demo.dir/DependInfo.cmake"
+  "CMakeFiles/template.dir/DependInfo.cmake"
   )

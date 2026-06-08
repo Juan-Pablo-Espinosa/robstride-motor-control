@@ -71,6 +71,7 @@ all: CMakeFiles/motor_studio.dir/all
 all: CMakeFiles/showcase_single.dir/all
 all: CMakeFiles/showcase_all.dir/all
 all: CMakeFiles/precision_demo.dir/all
+all: CMakeFiles/template.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
@@ -82,6 +83,7 @@ codegen: CMakeFiles/motor_studio.dir/codegen
 codegen: CMakeFiles/showcase_single.dir/codegen
 codegen: CMakeFiles/showcase_all.dir/codegen
 codegen: CMakeFiles/precision_demo.dir/codegen
+codegen: CMakeFiles/template.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -97,6 +99,7 @@ clean: CMakeFiles/motor_studio.dir/clean
 clean: CMakeFiles/showcase_single.dir/clean
 clean: CMakeFiles/showcase_all.dir/clean
 clean: CMakeFiles/precision_demo.dir/clean
+clean: CMakeFiles/template.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -354,6 +357,38 @@ CMakeFiles/precision_demo.dir/codegen:
 CMakeFiles/precision_demo.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/precision_demo.dir/build.make CMakeFiles/precision_demo.dir/clean
 .PHONY : CMakeFiles/precision_demo.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/template.dir
+
+# All Build rule for target.
+CMakeFiles/template.dir/all: CMakeFiles/gr0x_motor.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/template.dir/build.make CMakeFiles/template.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/template.dir/build.make CMakeFiles/template.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=19,20 "Built target template"
+.PHONY : CMakeFiles/template.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/template.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 6
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/template.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 0
+.PHONY : CMakeFiles/template.dir/rule
+
+# Convenience name for target.
+template: CMakeFiles/template.dir/rule
+.PHONY : template
+
+# codegen rule for target.
+CMakeFiles/template.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/template.dir/build.make CMakeFiles/template.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=19,20 "Finished codegen for target template"
+.PHONY : CMakeFiles/template.dir/codegen
+
+# clean rule for target.
+CMakeFiles/template.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/template.dir/build.make CMakeFiles/template.dir/clean
+.PHONY : CMakeFiles/template.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

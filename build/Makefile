@@ -220,6 +220,19 @@ precision_demo/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/precision_demo.dir/build.make CMakeFiles/precision_demo.dir/build
 .PHONY : precision_demo/fast
 
+#=============================================================================
+# Target rules for targets named template
+
+# Build rule for target.
+template: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 template
+.PHONY : template
+
+# fast build rule for target.
+template/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/template.dir/build.make CMakeFiles/template.dir/build
+.PHONY : template/fast
+
 examples/motor_studio.o: examples/motor_studio.cpp.o
 .PHONY : examples/motor_studio.o
 
@@ -315,6 +328,30 @@ examples/showcase_single.s: examples/showcase_single.cpp.s
 examples/showcase_single.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_single.dir/build.make CMakeFiles/showcase_single.dir/examples/showcase_single.cpp.s
 .PHONY : examples/showcase_single.cpp.s
+
+examples/template.o: examples/template.cpp.o
+.PHONY : examples/template.o
+
+# target to build an object file
+examples/template.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/template.dir/build.make CMakeFiles/template.dir/examples/template.cpp.o
+.PHONY : examples/template.cpp.o
+
+examples/template.i: examples/template.cpp.i
+.PHONY : examples/template.i
+
+# target to preprocess a source file
+examples/template.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/template.dir/build.make CMakeFiles/template.dir/examples/template.cpp.i
+.PHONY : examples/template.cpp.i
+
+examples/template.s: examples/template.cpp.s
+.PHONY : examples/template.s
+
+# target to generate assembly for a file
+examples/template.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/template.dir/build.make CMakeFiles/template.dir/examples/template.cpp.s
+.PHONY : examples/template.cpp.s
 
 src/motor_bus.o: src/motor_bus.cpp.o
 .PHONY : src/motor_bus.o
@@ -476,6 +513,7 @@ help:
 	@echo "... scan_test"
 	@echo "... showcase_all"
 	@echo "... showcase_single"
+	@echo "... template"
 	@echo "... examples/motor_studio.o"
 	@echo "... examples/motor_studio.i"
 	@echo "... examples/motor_studio.s"
@@ -488,6 +526,9 @@ help:
 	@echo "... examples/showcase_single.o"
 	@echo "... examples/showcase_single.i"
 	@echo "... examples/showcase_single.s"
+	@echo "... examples/template.o"
+	@echo "... examples/template.i"
+	@echo "... examples/template.s"
 	@echo "... src/motor_bus.o"
 	@echo "... src/motor_bus.i"
 	@echo "... src/motor_bus.s"

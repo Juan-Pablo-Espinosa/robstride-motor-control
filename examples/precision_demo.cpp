@@ -23,11 +23,11 @@
 // ---------------------------------------------------------------------------
 // CONFIGURE HERE
 // ---------------------------------------------------------------------------
-static constexpr int   HOLD_MS    = 4000;          // ms to hold each position
+static constexpr int   HOLD_MS    = 2000;          // ms to hold each position
 static constexpr float JOINT_MIN  = 0.0f;          // rad — fully extended knee
 static constexpr float JOINT_MAX  = 2.094f;        // rad — 120° max flexion
 static constexpr float KP         = 200.0f;         // position stiffness
-static constexpr float KD         = 17.0f;          // damping
+static constexpr float KD         = 18.5f;          // damping
 static constexpr float MAX_ACCEL  = 5.0f;          // rad/s² — smooth ramp
 // ---------------------------------------------------------------------------
 

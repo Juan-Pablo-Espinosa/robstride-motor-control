@@ -57,3 +57,6 @@ target_link_libraries(showcase_all PRIVATE gr0x_motor)
 
 add_executable(precision_demo examples/precision_demo.cpp)
 target_link_libraries(precision_demo PRIVATE gr0x_motor)
+
+add_executable(template examples/template.cpp)
+target_link_libraries(template PRIVATE gr0x_motor)
