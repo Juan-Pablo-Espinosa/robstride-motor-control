@@ -135,8 +135,10 @@ bool RobstrideMotor::sendMIT(float angle, float vel, float kp, float kd, float t
 }
 
 bool RobstrideMotor::parseFeedback(const CANFrame& frame, MotorState& state_out) const {
-    uint8_t comm = (frame.can_id >> 24) & 0x1F;
+    uint8_t comm     = (frame.can_id >> 24) & 0x1F;
+    uint8_t reply_id = (frame.can_id >> 8) & 0xFF;
     if (comm != COMM_FEEDBACK) return false;
+    if (reply_id != motor_id_) return false;
 
     state_out.mode = static_cast<MotorMode>((frame.can_id >> 22) & 0x03);
 
@@ -167,8 +169,13 @@ bool RobstrideMotor::requestFeedback(MotorState& state_out) {
 
 bool RobstrideMotor::waitFeedback(MotorState& state_out, int timeout_ms) {
     CANFrame rx = {};
-    if (!transport_.recv(rx, timeout_ms)) return false;
-    return parseFeedback(rx, state_out);
+    // Drain frames until we find one from our motor_id_
+    // Needed because both motors share one socket and frames interleave
+    for (int i = 0; i < 8; i++) {
+        if (!transport_.recv(rx, timeout_ms)) return false;
+        if (parseFeedback(rx, state_out)) return true;
+    }
+    return false;
 }
 
 bool RobstrideMotor::setZero() {

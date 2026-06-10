@@ -28,6 +28,7 @@ struct MotorEntry {
     MotorTarget    target;
     MotorState     state;
     bool           enabled     = false;
+    bool           faulted     = false;
 
     // Acceleration ramp state
     float interpolated_angle      = 0.0f;  // current ramp position (rad)
@@ -72,6 +73,10 @@ public:
     bool disable(uint8_t id, bool clear_fault = false);
     void enableAll();
     void disableAll();
+
+    // --- Fault ---
+    bool isFaulted(uint8_t id);
+    bool clearFault(uint8_t id);  // disable(clear_fault=true) + resets faulted flag
 
     // --- Control thread ---
     void start();

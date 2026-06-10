@@ -221,6 +221,19 @@ precision_demo/fast:
 .PHONY : precision_demo/fast
 
 #=============================================================================
+# Target rules for targets named fault_timestamp_test
+
+# Build rule for target.
+fault_timestamp_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fault_timestamp_test
+.PHONY : fault_timestamp_test
+
+# fast build rule for target.
+fault_timestamp_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fault_timestamp_test.dir/build.make CMakeFiles/fault_timestamp_test.dir/build
+.PHONY : fault_timestamp_test/fast
+
+#=============================================================================
 # Target rules for targets named template
 
 # Build rule for target.
@@ -449,6 +462,30 @@ test/control_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/control_test.dir/build.make CMakeFiles/control_test.dir/test/control_test.cpp.s
 .PHONY : test/control_test.cpp.s
 
+test/fault_timestamp_test.o: test/fault_timestamp_test.cpp.o
+.PHONY : test/fault_timestamp_test.o
+
+# target to build an object file
+test/fault_timestamp_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fault_timestamp_test.dir/build.make CMakeFiles/fault_timestamp_test.dir/test/fault_timestamp_test.cpp.o
+.PHONY : test/fault_timestamp_test.cpp.o
+
+test/fault_timestamp_test.i: test/fault_timestamp_test.cpp.i
+.PHONY : test/fault_timestamp_test.i
+
+# target to preprocess a source file
+test/fault_timestamp_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fault_timestamp_test.dir/build.make CMakeFiles/fault_timestamp_test.dir/test/fault_timestamp_test.cpp.i
+.PHONY : test/fault_timestamp_test.cpp.i
+
+test/fault_timestamp_test.s: test/fault_timestamp_test.cpp.s
+.PHONY : test/fault_timestamp_test.s
+
+# target to generate assembly for a file
+test/fault_timestamp_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fault_timestamp_test.dir/build.make CMakeFiles/fault_timestamp_test.dir/test/fault_timestamp_test.cpp.s
+.PHONY : test/fault_timestamp_test.cpp.s
+
 test/feedback_test.o: test/feedback_test.cpp.o
 .PHONY : test/feedback_test.o
 
@@ -506,6 +543,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... control_test"
+	@echo "... fault_timestamp_test"
 	@echo "... feedback_test"
 	@echo "... gr0x_motor"
 	@echo "... motor_studio"
@@ -541,6 +579,9 @@ help:
 	@echo "... test/control_test.o"
 	@echo "... test/control_test.i"
 	@echo "... test/control_test.s"
+	@echo "... test/fault_timestamp_test.o"
+	@echo "... test/fault_timestamp_test.i"
+	@echo "... test/fault_timestamp_test.s"
 	@echo "... test/feedback_test.o"
 	@echo "... test/feedback_test.i"
 	@echo "... test/feedback_test.s"

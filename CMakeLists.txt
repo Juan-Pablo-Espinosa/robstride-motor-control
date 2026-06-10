@@ -56,7 +56,10 @@ add_executable(showcase_all examples/showcase_all.cpp)
 target_link_libraries(showcase_all PRIVATE gr0x_motor)
 
 add_executable(precision_demo examples/precision_demo.cpp)
-target_link_libraries(precision_demo PRIVATE gr0x_motor)
+target_link_libraries(precision_demo gr0x_motor)
+
+add_executable(fault_timestamp_test test/fault_timestamp_test.cpp)
+target_link_libraries(fault_timestamp_test gr0x_motor)
 
 add_executable(template examples/template.cpp)
 target_link_libraries(template PRIVATE gr0x_motor)

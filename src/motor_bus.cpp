@@ -135,6 +135,23 @@ void MotorBus::disableAll() {
     }
 }
 
+bool MotorBus::isFaulted(uint8_t id) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto it = motors_.find(id);
+    if (it == motors_.end()) return false;
+    return it->second.faulted;
+}
+
+bool MotorBus::clearFault(uint8_t id) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto it = motors_.find(id);
+    if (it == motors_.end()) return false;
+    it->second.motor.disable(true);
+    it->second.enabled = false;
+    it->second.faulted = false;
+    return true;
+}
+
 // ---------------------------------------------------------------------------
 // Emergency stop
 //
@@ -235,7 +252,15 @@ void MotorBus::controlLoop() {
                 }
 
                 entry.motor.sendMIT(cmd_angle, cmd_vel, t.kp, t.kd, t.torque);
-                entry.motor.requestFeedback(entry.state);
+                if (entry.motor.requestFeedback(entry.state)) {
+                    entry.state.last_update = std::chrono::steady_clock::now();
+                    if (entry.state.fault != 0) {
+                        entry.faulted = true;
+                        entry.enabled = false;
+                        fprintf(stderr, "[FAULT] Motor %d fault code: 0x%02X — auto-disabled\n",
+                                id, entry.state.fault);
+                    }
+                }
             }
         }
 

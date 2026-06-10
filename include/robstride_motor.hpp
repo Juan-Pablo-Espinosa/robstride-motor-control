@@ -3,6 +3,7 @@
 #include "motor_config.hpp"
 #include <cstdint>
 #include <vector>
+#include <chrono>
 
 static constexpr uint8_t  ROBSTRIDE_HOST_ID  = 0xFD;
 static constexpr uint8_t  COMM_OBTAIN_ID     = 0;
@@ -48,6 +49,7 @@ struct MotorState {
     float     temperature;
     uint8_t   fault;
     MotorMode mode;
+    std::chrono::steady_clock::time_point last_update;
 };
 
 class RobstrideMotor {
