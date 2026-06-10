@@ -234,6 +234,19 @@ fault_timestamp_test/fast:
 .PHONY : fault_timestamp_test/fast
 
 #=============================================================================
+# Target rules for targets named motion_test
+
+# Build rule for target.
+motion_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 motion_test
+.PHONY : motion_test
+
+# fast build rule for target.
+motion_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/motion_test.dir/build.make CMakeFiles/motion_test.dir/build
+.PHONY : motion_test/fast
+
+#=============================================================================
 # Target rules for targets named template
 
 # Build rule for target.
@@ -510,6 +523,30 @@ test/feedback_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/feedback_test.dir/build.make CMakeFiles/feedback_test.dir/test/feedback_test.cpp.s
 .PHONY : test/feedback_test.cpp.s
 
+test/motion_test.o: test/motion_test.cpp.o
+.PHONY : test/motion_test.o
+
+# target to build an object file
+test/motion_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/motion_test.dir/build.make CMakeFiles/motion_test.dir/test/motion_test.cpp.o
+.PHONY : test/motion_test.cpp.o
+
+test/motion_test.i: test/motion_test.cpp.i
+.PHONY : test/motion_test.i
+
+# target to preprocess a source file
+test/motion_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/motion_test.dir/build.make CMakeFiles/motion_test.dir/test/motion_test.cpp.i
+.PHONY : test/motion_test.cpp.i
+
+test/motion_test.s: test/motion_test.cpp.s
+.PHONY : test/motion_test.s
+
+# target to generate assembly for a file
+test/motion_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/motion_test.dir/build.make CMakeFiles/motion_test.dir/test/motion_test.cpp.s
+.PHONY : test/motion_test.cpp.s
+
 test/scan_test.o: test/scan_test.cpp.o
 .PHONY : test/scan_test.o
 
@@ -546,6 +583,7 @@ help:
 	@echo "... fault_timestamp_test"
 	@echo "... feedback_test"
 	@echo "... gr0x_motor"
+	@echo "... motion_test"
 	@echo "... motor_studio"
 	@echo "... precision_demo"
 	@echo "... scan_test"
@@ -585,6 +623,9 @@ help:
 	@echo "... test/feedback_test.o"
 	@echo "... test/feedback_test.i"
 	@echo "... test/feedback_test.s"
+	@echo "... test/motion_test.o"
+	@echo "... test/motion_test.i"
+	@echo "... test/motion_test.s"
 	@echo "... test/scan_test.o"
 	@echo "... test/scan_test.i"
 	@echo "... test/scan_test.s"

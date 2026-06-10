@@ -61,5 +61,8 @@ target_link_libraries(precision_demo gr0x_motor)
 add_executable(fault_timestamp_test test/fault_timestamp_test.cpp)
 target_link_libraries(fault_timestamp_test gr0x_motor)
 
+add_executable(motion_test test/motion_test.cpp)
+target_link_libraries(motion_test gr0x_motor)
+
 add_executable(template examples/template.cpp)
 target_link_libraries(template PRIVATE gr0x_motor)
