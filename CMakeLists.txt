@@ -66,3 +66,5 @@ target_link_libraries(motion_test gr0x_motor)
 
 add_executable(template examples/template.cpp)
 target_link_libraries(template PRIVATE gr0x_motor)
+add_executable(resilience_test test/resilience_test.cpp)
+target_link_libraries(resilience_test PRIVATE gr0x_motor)

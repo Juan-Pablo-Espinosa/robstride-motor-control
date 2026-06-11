@@ -67,4 +67,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/fault_timestamp_test.dir/DependInfo.cmake"
   "CMakeFiles/motion_test.dir/DependInfo.cmake"
   "CMakeFiles/template.dir/DependInfo.cmake"
+  "CMakeFiles/resilience_test.dir/DependInfo.cmake"
   )

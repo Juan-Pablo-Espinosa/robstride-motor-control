@@ -259,6 +259,19 @@ template/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/template.dir/build.make CMakeFiles/template.dir/build
 .PHONY : template/fast
 
+#=============================================================================
+# Target rules for targets named resilience_test
+
+# Build rule for target.
+resilience_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 resilience_test
+.PHONY : resilience_test
+
+# fast build rule for target.
+resilience_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/resilience_test.dir/build.make CMakeFiles/resilience_test.dir/build
+.PHONY : resilience_test/fast
+
 examples/motor_studio.o: examples/motor_studio.cpp.o
 .PHONY : examples/motor_studio.o
 
@@ -547,6 +560,30 @@ test/motion_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/motion_test.dir/build.make CMakeFiles/motion_test.dir/test/motion_test.cpp.s
 .PHONY : test/motion_test.cpp.s
 
+test/resilience_test.o: test/resilience_test.cpp.o
+.PHONY : test/resilience_test.o
+
+# target to build an object file
+test/resilience_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/resilience_test.dir/build.make CMakeFiles/resilience_test.dir/test/resilience_test.cpp.o
+.PHONY : test/resilience_test.cpp.o
+
+test/resilience_test.i: test/resilience_test.cpp.i
+.PHONY : test/resilience_test.i
+
+# target to preprocess a source file
+test/resilience_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/resilience_test.dir/build.make CMakeFiles/resilience_test.dir/test/resilience_test.cpp.i
+.PHONY : test/resilience_test.cpp.i
+
+test/resilience_test.s: test/resilience_test.cpp.s
+.PHONY : test/resilience_test.s
+
+# target to generate assembly for a file
+test/resilience_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/resilience_test.dir/build.make CMakeFiles/resilience_test.dir/test/resilience_test.cpp.s
+.PHONY : test/resilience_test.cpp.s
+
 test/scan_test.o: test/scan_test.cpp.o
 .PHONY : test/scan_test.o
 
@@ -586,6 +623,7 @@ help:
 	@echo "... motion_test"
 	@echo "... motor_studio"
 	@echo "... precision_demo"
+	@echo "... resilience_test"
 	@echo "... scan_test"
 	@echo "... showcase_all"
 	@echo "... showcase_single"
@@ -626,6 +664,9 @@ help:
 	@echo "... test/motion_test.o"
 	@echo "... test/motion_test.i"
 	@echo "... test/motion_test.s"
+	@echo "... test/resilience_test.o"
+	@echo "... test/resilience_test.i"
+	@echo "... test/resilience_test.s"
 	@echo "... test/scan_test.o"
 	@echo "... test/scan_test.i"
 	@echo "... test/scan_test.s"
