@@ -285,6 +285,32 @@ fault_injection_test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fault_injection_test.dir/build.make CMakeFiles/fault_injection_test.dir/build
 .PHONY : fault_injection_test/fast
 
+#=============================================================================
+# Target rules for targets named timestamp_test
+
+# Build rule for target.
+timestamp_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 timestamp_test
+.PHONY : timestamp_test
+
+# fast build rule for target.
+timestamp_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/timestamp_test.dir/build.make CMakeFiles/timestamp_test.dir/build
+.PHONY : timestamp_test/fast
+
+#=============================================================================
+# Target rules for targets named setzero_test
+
+# Build rule for target.
+setzero_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 setzero_test
+.PHONY : setzero_test
+
+# fast build rule for target.
+setzero_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/setzero_test.dir/build.make CMakeFiles/setzero_test.dir/build
+.PHONY : setzero_test/fast
+
 examples/motor_studio.o: examples/motor_studio.cpp.o
 .PHONY : examples/motor_studio.o
 
@@ -645,6 +671,54 @@ test/scan_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/scan_test.dir/build.make CMakeFiles/scan_test.dir/test/scan_test.cpp.s
 .PHONY : test/scan_test.cpp.s
 
+test/setzero_test.o: test/setzero_test.cpp.o
+.PHONY : test/setzero_test.o
+
+# target to build an object file
+test/setzero_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/setzero_test.dir/build.make CMakeFiles/setzero_test.dir/test/setzero_test.cpp.o
+.PHONY : test/setzero_test.cpp.o
+
+test/setzero_test.i: test/setzero_test.cpp.i
+.PHONY : test/setzero_test.i
+
+# target to preprocess a source file
+test/setzero_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/setzero_test.dir/build.make CMakeFiles/setzero_test.dir/test/setzero_test.cpp.i
+.PHONY : test/setzero_test.cpp.i
+
+test/setzero_test.s: test/setzero_test.cpp.s
+.PHONY : test/setzero_test.s
+
+# target to generate assembly for a file
+test/setzero_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/setzero_test.dir/build.make CMakeFiles/setzero_test.dir/test/setzero_test.cpp.s
+.PHONY : test/setzero_test.cpp.s
+
+test/timestamp_test.o: test/timestamp_test.cpp.o
+.PHONY : test/timestamp_test.o
+
+# target to build an object file
+test/timestamp_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/timestamp_test.dir/build.make CMakeFiles/timestamp_test.dir/test/timestamp_test.cpp.o
+.PHONY : test/timestamp_test.cpp.o
+
+test/timestamp_test.i: test/timestamp_test.cpp.i
+.PHONY : test/timestamp_test.i
+
+# target to preprocess a source file
+test/timestamp_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/timestamp_test.dir/build.make CMakeFiles/timestamp_test.dir/test/timestamp_test.cpp.i
+.PHONY : test/timestamp_test.cpp.i
+
+test/timestamp_test.s: test/timestamp_test.cpp.s
+.PHONY : test/timestamp_test.s
+
+# target to generate assembly for a file
+test/timestamp_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/timestamp_test.dir/build.make CMakeFiles/timestamp_test.dir/test/timestamp_test.cpp.s
+.PHONY : test/timestamp_test.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -663,9 +737,11 @@ help:
 	@echo "... precision_demo"
 	@echo "... resilience_test"
 	@echo "... scan_test"
+	@echo "... setzero_test"
 	@echo "... showcase_all"
 	@echo "... showcase_single"
 	@echo "... template"
+	@echo "... timestamp_test"
 	@echo "... examples/motor_studio.o"
 	@echo "... examples/motor_studio.i"
 	@echo "... examples/motor_studio.s"
@@ -711,6 +787,12 @@ help:
 	@echo "... test/scan_test.o"
 	@echo "... test/scan_test.i"
 	@echo "... test/scan_test.s"
+	@echo "... test/setzero_test.o"
+	@echo "... test/setzero_test.i"
+	@echo "... test/setzero_test.s"
+	@echo "... test/timestamp_test.o"
+	@echo "... test/timestamp_test.i"
+	@echo "... test/timestamp_test.s"
 .PHONY : help
 
 

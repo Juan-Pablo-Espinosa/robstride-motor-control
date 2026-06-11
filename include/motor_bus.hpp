@@ -74,6 +74,9 @@ public:
     void enableAll();
     void disableAll();
 
+    // --- Calibration ---
+    bool setZero(uint8_t id);  // permanently sets current position as zero — use carefully
+
     // --- Fault ---
     bool isFaulted(uint8_t id);
     bool clearFault(uint8_t id);  // disable(clear_fault=true) + resets faulted flag

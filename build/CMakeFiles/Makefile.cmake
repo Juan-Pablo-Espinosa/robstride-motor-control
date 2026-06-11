@@ -69,4 +69,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/template.dir/DependInfo.cmake"
   "CMakeFiles/resilience_test.dir/DependInfo.cmake"
   "CMakeFiles/fault_injection_test.dir/DependInfo.cmake"
+  "CMakeFiles/timestamp_test.dir/DependInfo.cmake"
+  "CMakeFiles/setzero_test.dir/DependInfo.cmake"
   )

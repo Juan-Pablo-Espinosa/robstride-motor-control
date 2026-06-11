@@ -76,6 +76,8 @@ all: CMakeFiles/motion_test.dir/all
 all: CMakeFiles/template.dir/all
 all: CMakeFiles/resilience_test.dir/all
 all: CMakeFiles/fault_injection_test.dir/all
+all: CMakeFiles/timestamp_test.dir/all
+all: CMakeFiles/setzero_test.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
@@ -92,6 +94,8 @@ codegen: CMakeFiles/motion_test.dir/codegen
 codegen: CMakeFiles/template.dir/codegen
 codegen: CMakeFiles/resilience_test.dir/codegen
 codegen: CMakeFiles/fault_injection_test.dir/codegen
+codegen: CMakeFiles/timestamp_test.dir/codegen
+codegen: CMakeFiles/setzero_test.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -112,6 +116,8 @@ clean: CMakeFiles/motion_test.dir/clean
 clean: CMakeFiles/template.dir/clean
 clean: CMakeFiles/resilience_test.dir/clean
 clean: CMakeFiles/fault_injection_test.dir/clean
+clean: CMakeFiles/timestamp_test.dir/clean
+clean: CMakeFiles/setzero_test.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -281,7 +287,7 @@ CMakeFiles/motor_studio.dir/clean:
 CMakeFiles/showcase_single.dir/all: CMakeFiles/gr0x_motor.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_single.dir/build.make CMakeFiles/showcase_single.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_single.dir/build.make CMakeFiles/showcase_single.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=25,26 "Built target showcase_single"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=27,28 "Built target showcase_single"
 .PHONY : CMakeFiles/showcase_single.dir/all
 
 # Build rule for subdir invocation for target.
@@ -298,7 +304,7 @@ showcase_single: CMakeFiles/showcase_single.dir/rule
 # codegen rule for target.
 CMakeFiles/showcase_single.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_single.dir/build.make CMakeFiles/showcase_single.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=25,26 "Finished codegen for target showcase_single"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=27,28 "Finished codegen for target showcase_single"
 .PHONY : CMakeFiles/showcase_single.dir/codegen
 
 # clean rule for target.
@@ -313,7 +319,7 @@ CMakeFiles/showcase_single.dir/clean:
 CMakeFiles/showcase_all.dir/all: CMakeFiles/gr0x_motor.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_all.dir/build.make CMakeFiles/showcase_all.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_all.dir/build.make CMakeFiles/showcase_all.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=23,24 "Built target showcase_all"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=25,26 "Built target showcase_all"
 .PHONY : CMakeFiles/showcase_all.dir/all
 
 # Build rule for subdir invocation for target.
@@ -330,7 +336,7 @@ showcase_all: CMakeFiles/showcase_all.dir/rule
 # codegen rule for target.
 CMakeFiles/showcase_all.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/showcase_all.dir/build.make CMakeFiles/showcase_all.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=23,24 "Finished codegen for target showcase_all"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=25,26 "Finished codegen for target showcase_all"
 .PHONY : CMakeFiles/showcase_all.dir/codegen
 
 # clean rule for target.
@@ -441,7 +447,7 @@ CMakeFiles/motion_test.dir/clean:
 CMakeFiles/template.dir/all: CMakeFiles/gr0x_motor.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/template.dir/build.make CMakeFiles/template.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/template.dir/build.make CMakeFiles/template.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=27,28 "Built target template"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=29,30 "Built target template"
 .PHONY : CMakeFiles/template.dir/all
 
 # Build rule for subdir invocation for target.
@@ -458,7 +464,7 @@ template: CMakeFiles/template.dir/rule
 # codegen rule for target.
 CMakeFiles/template.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/template.dir/build.make CMakeFiles/template.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=27,28 "Finished codegen for target template"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=29,30 "Finished codegen for target template"
 .PHONY : CMakeFiles/template.dir/codegen
 
 # clean rule for target.
@@ -529,6 +535,70 @@ CMakeFiles/fault_injection_test.dir/codegen:
 CMakeFiles/fault_injection_test.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fault_injection_test.dir/build.make CMakeFiles/fault_injection_test.dir/clean
 .PHONY : CMakeFiles/fault_injection_test.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/timestamp_test.dir
+
+# All Build rule for target.
+CMakeFiles/timestamp_test.dir/all: CMakeFiles/gr0x_motor.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/timestamp_test.dir/build.make CMakeFiles/timestamp_test.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/timestamp_test.dir/build.make CMakeFiles/timestamp_test.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=31,32 "Built target timestamp_test"
+.PHONY : CMakeFiles/timestamp_test.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/timestamp_test.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 6
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/timestamp_test.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 0
+.PHONY : CMakeFiles/timestamp_test.dir/rule
+
+# Convenience name for target.
+timestamp_test: CMakeFiles/timestamp_test.dir/rule
+.PHONY : timestamp_test
+
+# codegen rule for target.
+CMakeFiles/timestamp_test.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/timestamp_test.dir/build.make CMakeFiles/timestamp_test.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=31,32 "Finished codegen for target timestamp_test"
+.PHONY : CMakeFiles/timestamp_test.dir/codegen
+
+# clean rule for target.
+CMakeFiles/timestamp_test.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/timestamp_test.dir/build.make CMakeFiles/timestamp_test.dir/clean
+.PHONY : CMakeFiles/timestamp_test.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/setzero_test.dir
+
+# All Build rule for target.
+CMakeFiles/setzero_test.dir/all: CMakeFiles/gr0x_motor.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/setzero_test.dir/build.make CMakeFiles/setzero_test.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/setzero_test.dir/build.make CMakeFiles/setzero_test.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=23,24 "Built target setzero_test"
+.PHONY : CMakeFiles/setzero_test.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/setzero_test.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 6
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/setzero_test.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gr0x-pi/gr0x-motor/build/CMakeFiles 0
+.PHONY : CMakeFiles/setzero_test.dir/rule
+
+# Convenience name for target.
+setzero_test: CMakeFiles/setzero_test.dir/rule
+.PHONY : setzero_test
+
+# codegen rule for target.
+CMakeFiles/setzero_test.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/setzero_test.dir/build.make CMakeFiles/setzero_test.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/gr0x-pi/gr0x-motor/build/CMakeFiles --progress-num=23,24 "Finished codegen for target setzero_test"
+.PHONY : CMakeFiles/setzero_test.dir/codegen
+
+# clean rule for target.
+CMakeFiles/setzero_test.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/setzero_test.dir/build.make CMakeFiles/setzero_test.dir/clean
+.PHONY : CMakeFiles/setzero_test.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

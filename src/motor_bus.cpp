@@ -138,6 +138,20 @@ void MotorBus::disableAll() {
     }
 }
 
+bool MotorBus::setZero(uint8_t id) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto it = motors_.find(id);
+    if (it == motors_.end()) return false;
+    bool ok = it->second.motor.setZero();
+    if (ok) {
+        // Reseed ramp from new zero position
+        it->second.motor.requestFeedback(it->second.state);
+        it->second.interpolated_angle      = it->second.state.angle;
+        it->second.prev_interpolated_angle = it->second.state.angle;
+    }
+    return ok;
+}
+
 bool MotorBus::isFaulted(uint8_t id) {
     std::lock_guard<std::mutex> lock(mutex_);
     auto it = motors_.find(id);
