@@ -7,18 +7,22 @@ per-joint software limits, acceleration ramping, and a 200Hz multi-motor control
 loop designed to feed RL locomotion policies.
 
 Developed as part of the **GR-0X humanoid robot project** by
-[Daedamorph Robotics](https://daedamorph.com).
+[Daedamorph Robotics](https://daedamorph-robotics.juanpabloespinosachessal.workers.dev/).
 
 ---
 
 ## Features
 
 - 200Hz threaded control loop — sends MIT frames and reads feedback for all motors
+- Non-blocking recv loop — lost motor contributes zero blocking time to control loop
 - Per-joint acceleration limiting — smooth ramps built into the bus
 - Model-aware safety clamping — kp/kd/torque/velocity/angle clamped automatically
 - Per-joint software limits — angle range, torque cap, velocity cap per joint
 - Direction inversion — transparent sign flip for mirrored joints
 - Thread-safe API — setTarget() and getAllStates() safe from any thread
+- Per-motor fault detection — auto-disables faulted motor, others keep running
+- Observation timestamps — MotorState.last_update for staleness detection
+- Auto MIT mode on enable() — no power cycle needed after mode corruption
 - Emergency stop — async-signal-safe, callable from SIGINT/SIGTERM handler
 - Zero heap in hot path — no malloc/free in send/recv
 
@@ -119,7 +123,7 @@ What it covers:
     MotorBus bus(transport, 200);
 
     bus.addMotor(42, knee_cfg);
-    bus.addMotor(43, hip_cfg);
+    bus.addMotor(127, hip_cfg);
 
     bus.enableAll();
     bus.start();
@@ -136,7 +140,7 @@ What it covers:
     // Read all states — thread-safe, call from ROS timer
     auto states = bus.getAllStates();
     for (auto& [id, s] : states) {
-        // s.angle, s.velocity, s.torque, s.temperature, s.fault
+        // s.angle, s.velocity, s.torque, s.temperature, s.fault, s.last_update
     }
 
     bus.stop();
@@ -162,9 +166,9 @@ The ROS node never needs to clamp, ramp, or validate any value.
 
 The kernel assigns names opposite to physical labels:
 
-| Physical | Linux  | Use     |
-|----------|--------|---------|
-| J1/CAN-A | can1   | Motors  |
+| Physical | Linux  | Use        |
+|----------|--------|------------|
+| J1/CAN-A | can1   | Motors     |
 | J2/CAN-B | can0   | Second bus |
 
 /boot/firmware/config.txt:
@@ -185,16 +189,18 @@ Always power motors before bringing up CAN.
 
 ## Examples and Tests
 
-| Binary          | Description                              |
-|-----------------|------------------------------------------|
-| scan_test       | Discover all motors, print IDs           |
-| feedback_test   | Read motor state at 10Hz                 |
-| control_test    | MIT position move, 0.5 rad step          |
-| template        | Full starter template — start here       |
-| precision_demo  | Knee joint motion sequence               |
-| showcase_single | Full feature showcase, one motor         |
-| showcase_all    | Multi-motor showcase                     |
-| motor_studio    | Interactive terminal UI                  |
+| Binary               | Description                                       |
+|----------------------|---------------------------------------------------|
+| scan_test            | Discover all motors, print IDs                    |
+| feedback_test        | Read motor state at 10Hz                          |
+| control_test         | MIT position move, 0.5 rad step                   |
+| template             | Full starter template — start here                |
+| precision_demo       | Knee joint motion sequence                        |
+| showcase_single      | Full feature showcase, one motor                  |
+| showcase_all         | Multi-motor showcase, RS-03 + RS-04               |
+| motor_studio         | Interactive terminal UI                           |
+| resilience_test      | Lost motor test — confirms 200Hz survives dropout |
+| fault_injection_test | Fault state machine, soft limits, parseFeedback   |
 
 ---
 
@@ -202,14 +208,14 @@ Always power motors before bringing up CAN.
 
     Jetson AGX Thor
       RL policy (200Hz)
-        down arrow  ROS 2 joint commands over Ethernet
+        ↓ ROS 2 joint commands over Ethernet
     Raspberry Pi 5
       MotorBus (200Hz CAN loop)
-        down arrow  MIT frames at 1Mbps
+        ↓ MIT frames at 1Mbps
     RobStride Actuators (12-20 joints, two CAN buses)
-        up arrow  feedback: angle, velocity, torque, temp
+        ↑ feedback: angle, velocity, torque, temp
     Raspberry Pi 5
-        up arrow  getAllStates() to ROS 2 to Jetson
+        ↑ getAllStates() to ROS 2 to Jetson
 
 Target ROS node is ~50 lines. The library does everything else.
 
@@ -223,56 +229,66 @@ Target ROS node is ~50 lines. The library does everything else.
     bits 23-8:   data_2 (host_id=0xFD, or torque in Control frames)
     bits  7-0:   motor_id (1-127)
 
+### Response frame ID is swapped vs TX
+
+    TX: (comm_type << 24) | (host_id << 8) | motor_id
+    RX: (comm_type << 24) | (motor_id << 8) | host_id
+
+Extract motor ID from response: (rx.can_id >> 8) & 0xFF
+
 ### MIT Control frame (comm_type=1)
 
-| Bytes       | Field    | Range              |
-|-------------|----------|--------------------|
-| CAN ID data_2 | torque | normalized         |
-| 0-1         | angle    | [-4pi, +4pi] rad   |
-| 2-3         | velocity | feedforward rad/s  |
-| 4-5         | kp       | [0, max_kp]        |
-| 6-7         | kd       | [0, max_kd]        |
+| Bytes         | Field    | Range            |
+|---------------|----------|------------------|
+| CAN ID data_2 | torque   | normalized       |
+| 0-1           | angle    | [-4pi, +4pi] rad |
+| 2-3           | velocity | feedforward rad/s|
+| 4-5           | kp       | [0, max_kp]      |
+| 6-7           | kd       | [0, max_kd]      |
 
 ### Feedback frame (comm_type=2)
 
-| Bytes | Field                          |
-|-------|--------------------------------|
-| 0-1   | angle                          |
-| 2-3   | velocity                       |
-| 4-5   | torque                         |
-| 6-7   | temperature (uint16 / 10 = C)  |
+| Bytes | Field                         |
+|-------|-------------------------------|
+| 0-1   | angle                         |
+| 2-3   | velocity                      |
+| 4-5   | torque                        |
+| 6-7   | temperature (uint16 / 10 = C) |
 
 ### Key parameter registers
 
-| Register           | Index  | Description                      |
-|--------------------|--------|----------------------------------|
-| PARAM_RUN_MODE     | 0x7005 | 0=MIT 1=Pos 2=Spd 3=Cur          |
-| PARAM_SPD_REF      | 0x700A | Speed setpoint rad/s             |
-| PARAM_LIMIT_TORQUE | 0x700B | Torque limit                     |
-| PARAM_LOC_REF      | 0x7010 | Position setpoint                |
-| PARAM_LIMIT_SPD    | 0x7011 | Speed limit (set before LOC_REF) |
-| PARAM_MECH_POS     | 0x7014 | Current position read-only       |
+| Register           | Index  | Description                     |
+|--------------------|--------|---------------------------------|
+| PARAM_RUN_MODE     | 0x7005 | 0=MIT 1=Pos 2=Spd 3=Cur         |
+| PARAM_SPD_REF      | 0x700A | Speed setpoint rad/s            |
+| PARAM_LIMIT_TORQUE | 0x700B | Torque limit                    |
+| PARAM_LOC_REF      | 0x7010 | Position setpoint               |
+| PARAM_LIMIT_SPD    | 0x7011 | Speed limit (set before LOC_REF)|
+| PARAM_MECH_POS     | 0x7014 | Current position read-only      |
 
 ---
 
 ## Known Issues
 
 - Steady-state error ~0.7-1.2 degrees in MIT mode — normal, no integrator
-- MCP2518FD BUS-OFF on unACKed frames — see recovery above
+- MCP2518FD BUS-OFF on reconnect of a previously disconnected motor — bring CAN back up with setup.sh
 - Factory default motor ID is 127 — always scan before assuming
-- Fault byte read into MotorState.fault but auto-disable not yet implemented
+- motor_studio hardcodes RS-03 model for all motors — use addMotor() with correct config in production
 
 ---
 
 ## Roadmap
 
 - [x] Acceleration limiting per motor
-- [ ] Per-motor fault detection and auto-disable
-- [ ] Observation timestamps in MotorState
+- [x] Per-motor fault detection and auto-disable
+- [x] Observation timestamps in MotorState
+- [x] Non-blocking recv loop — lost motor = zero impact on surviving motors
+- [x] Auto MIT mode on enable — no power cycle needed
 - [ ] Speed mode helper (PARAM_SPD_REF)
 - [ ] CAN bus health and BUS-OFF auto-recovery
 - [ ] Watchdog thread
 - [ ] systemd CAN bringup service
+- [ ] ROS 2 node (~50 lines)
 
 ---
 
