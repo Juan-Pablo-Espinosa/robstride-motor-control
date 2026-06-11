@@ -10,5 +10,6 @@
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/motion_test.dir
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/template.dir
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/resilience_test.dir
+/home/gr0x-pi/gr0x-motor/build/CMakeFiles/fault_injection_test.dir
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/edit_cache.dir
 /home/gr0x-pi/gr0x-motor/build/CMakeFiles/rebuild_cache.dir

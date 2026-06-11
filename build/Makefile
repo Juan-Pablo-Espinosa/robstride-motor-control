@@ -272,6 +272,19 @@ resilience_test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/resilience_test.dir/build.make CMakeFiles/resilience_test.dir/build
 .PHONY : resilience_test/fast
 
+#=============================================================================
+# Target rules for targets named fault_injection_test
+
+# Build rule for target.
+fault_injection_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fault_injection_test
+.PHONY : fault_injection_test
+
+# fast build rule for target.
+fault_injection_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fault_injection_test.dir/build.make CMakeFiles/fault_injection_test.dir/build
+.PHONY : fault_injection_test/fast
+
 examples/motor_studio.o: examples/motor_studio.cpp.o
 .PHONY : examples/motor_studio.o
 
@@ -488,6 +501,30 @@ test/control_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/control_test.dir/build.make CMakeFiles/control_test.dir/test/control_test.cpp.s
 .PHONY : test/control_test.cpp.s
 
+test/fault_injection_test.o: test/fault_injection_test.cpp.o
+.PHONY : test/fault_injection_test.o
+
+# target to build an object file
+test/fault_injection_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fault_injection_test.dir/build.make CMakeFiles/fault_injection_test.dir/test/fault_injection_test.cpp.o
+.PHONY : test/fault_injection_test.cpp.o
+
+test/fault_injection_test.i: test/fault_injection_test.cpp.i
+.PHONY : test/fault_injection_test.i
+
+# target to preprocess a source file
+test/fault_injection_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fault_injection_test.dir/build.make CMakeFiles/fault_injection_test.dir/test/fault_injection_test.cpp.i
+.PHONY : test/fault_injection_test.cpp.i
+
+test/fault_injection_test.s: test/fault_injection_test.cpp.s
+.PHONY : test/fault_injection_test.s
+
+# target to generate assembly for a file
+test/fault_injection_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fault_injection_test.dir/build.make CMakeFiles/fault_injection_test.dir/test/fault_injection_test.cpp.s
+.PHONY : test/fault_injection_test.cpp.s
+
 test/fault_timestamp_test.o: test/fault_timestamp_test.cpp.o
 .PHONY : test/fault_timestamp_test.o
 
@@ -617,6 +654,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... control_test"
+	@echo "... fault_injection_test"
 	@echo "... fault_timestamp_test"
 	@echo "... feedback_test"
 	@echo "... gr0x_motor"
@@ -655,6 +693,9 @@ help:
 	@echo "... test/control_test.o"
 	@echo "... test/control_test.i"
 	@echo "... test/control_test.s"
+	@echo "... test/fault_injection_test.o"
+	@echo "... test/fault_injection_test.i"
+	@echo "... test/fault_injection_test.s"
 	@echo "... test/fault_timestamp_test.o"
 	@echo "... test/fault_timestamp_test.i"
 	@echo "... test/fault_timestamp_test.s"
