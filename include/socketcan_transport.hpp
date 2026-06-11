@@ -11,6 +11,7 @@ public:
     void close() override;
     bool send(const CANFrame& frame) override;
     bool recv(CANFrame& frame, int timeout_ms) override;
+    bool recvNonBlocking(CANFrame& frame) override;
     bool isOpen() const override;
 
 private:

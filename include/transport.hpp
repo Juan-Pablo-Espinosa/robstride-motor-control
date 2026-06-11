@@ -14,5 +14,6 @@ public:
     virtual void close() = 0;
     virtual bool send(const CANFrame& frame) = 0;
     virtual bool recv(CANFrame& frame, int timeout_ms) = 0;
+    virtual bool recvNonBlocking(CANFrame& frame) = 0;
     virtual bool isOpen() const = 0;
 };

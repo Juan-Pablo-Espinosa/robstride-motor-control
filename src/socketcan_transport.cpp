@@ -75,6 +75,16 @@ bool SocketCANTransport::recv(CANFrame& frame, int timeout_ms) {
     return true;
 }
 
+bool SocketCANTransport::recvNonBlocking(CANFrame& frame) {
+    struct can_frame rx = {};
+    int n = ::recv(sock_, &rx, sizeof(rx), MSG_DONTWAIT);
+    if (n <= 0) return false;
+    frame.can_id = rx.can_id & ~CAN_EFF_FLAG;
+    frame.len    = rx.can_dlc;
+    std::memcpy(frame.data, rx.data, rx.can_dlc);
+    return true;
+}
+
 bool SocketCANTransport::isOpen() const {
     return sock_ >= 0;
 }

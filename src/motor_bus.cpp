@@ -91,6 +91,8 @@ bool MotorBus::enable(uint8_t id) {
     if (it == motors_.end()) return false;
     bool ok = it->second.motor.enable();
         if (ok) {
+            // Always force MIT mode — motors remember run_mode across power cycles
+            it->second.motor.setRunMode(RunMode::MIT);
             it->second.enabled = true;
             // Immediately populate state so getState() after enable() is never stale zeros.
             // enable() already got a feedback frame — request one more to fill entry.state.
@@ -118,6 +120,7 @@ void MotorBus::enableAll() {
     std::lock_guard<std::mutex> lock(mutex_);
     for (auto& [id, entry] : motors_) {
         if (entry.motor.enable()) {
+            entry.motor.setRunMode(RunMode::MIT);
             entry.enabled = true;
             entry.motor.requestFeedback(entry.state);
             entry.interpolated_angle      = entry.state.angle;
@@ -213,7 +216,7 @@ void MotorBus::controlLoop() {
             break;
         }
 
-        // --- Send MIT commands and read feedback for all enabled motors ---
+        // --- Phase 1: send MIT to all enabled motors (no recv) ---
         {
             const float dt = 1.0f / static_cast<float>(hz_);
 
@@ -228,12 +231,10 @@ void MotorBus::controlLoop() {
                 float cmd_vel;
 
                 if (max_accel < 0.0f || !entry.ramp_initialized) {
-                    // Unlimited / passthrough — use target directly
                     cmd_angle = t.angle;
                     cmd_vel   = t.velocity;
                 } else {
-                    // Acceleration-limited ramp
-                    const float max_step = max_accel * dt;  // rad per cycle
+                    const float max_step = max_accel * dt;
                     const float error    = t.angle - entry.interpolated_angle;
 
                     entry.prev_interpolated_angle = entry.interpolated_angle;
@@ -246,19 +247,38 @@ void MotorBus::controlLoop() {
                         entry.interpolated_angle = t.angle;
                     }
 
-                    // Feedforward velocity = how fast we're moving the interpolated target
                     cmd_vel   = (entry.interpolated_angle - entry.prev_interpolated_angle) / dt;
                     cmd_angle = entry.interpolated_angle;
                 }
 
                 entry.motor.sendMIT(cmd_angle, cmd_vel, t.kp, t.kd, t.torque);
-                if (entry.motor.requestFeedback(entry.state)) {
+            }
+        }
+
+        // --- Phase 2: wait 2ms for motors to respond, then drain non-blocking ---
+        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            CANFrame rx = {};
+            // Drain all available frames — stops immediately when socket is empty
+            while (transport_.recvNonBlocking(rx)) {
+                uint8_t comm     = (rx.can_id >> 24) & 0x1F;
+                uint8_t reply_id = (rx.can_id >> 8) & 0xFF;
+                if (comm != COMM_FEEDBACK) continue;
+
+                auto it = motors_.find(reply_id);
+                if (it == motors_.end()) continue;
+
+                MotorEntry& entry = it->second;
+                if (!entry.enabled) continue;
+
+                if (entry.motor.parseFeedback(rx, entry.state)) {
                     entry.state.last_update = std::chrono::steady_clock::now();
                     if (entry.state.fault != 0) {
                         entry.faulted = true;
                         entry.enabled = false;
                         fprintf(stderr, "[FAULT] Motor %d fault code: 0x%02X — auto-disabled\n",
-                                id, entry.state.fault);
+                                reply_id, entry.state.fault);
                     }
                 }
             }

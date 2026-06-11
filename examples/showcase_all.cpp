@@ -55,23 +55,26 @@ int main() {
         return 1;
     }
 
-    MotorConfig cfg;
-    cfg.model = MotorModel::RS03;
-    cfg.resolve();
+    MotorConfig cfg_rs03;
+    cfg_rs03.model            = MotorModel::RS03;
+    cfg_rs03.max_acceleration = 5.0f;
+    cfg_rs03.resolve();
+
+    MotorConfig cfg_rs04;
+    cfg_rs04.model            = MotorModel::RS04;
+    cfg_rs04.max_acceleration = 5.0f;
+    cfg_rs04.max_torque       = 60.0f;
+    cfg_rs04.resolve();
 
     MotorBus bus(transport);
     g_bus = &bus;
 
-    // --- Discover all motors ---
-    printf("Scanning for motors (1-127)...\n");
-    auto found = bus.scanAndAdd(1, 127, cfg);
+    // Known motors — skip slow scan in production
+    bus.addMotor(42,  cfg_rs03);
+    bus.addMotor(127, cfg_rs04);
+    std::vector<uint8_t> found = {42, 127};
 
-    if (found.empty()) {
-        fprintf(stderr, "No motors found. Check power and CAN.\n");
-        return 1;
-    }
-
-    printf("Found %zu motor(s): ", found.size());
+    printf("Added motors: ");
     for (uint8_t id : found) printf("%d ", id);
     printf("\n\n");
 
@@ -112,24 +115,24 @@ int main() {
 
     bool ok = true;
 
-    // Phase 1 — Sine sweep ±0.5 rad around each motor's own origin
+    // Phase 1 — Sine sweep ±1.0 rad around each motor's own origin
     ok = runPhase("sine_sweep", 300, [&](uint8_t id, int i) {
         float org = origins.count(id) ? origins.at(id) : 0.0f;
         MotorTarget t;
-        t.angle    = org + 0.5f * sinf(2.0f * M_PI * 1.0f * (i / 100.0f));
+        t.angle    = org + 1.0f * sinf(2.0f * M_PI * 1.0f * (i / 100.0f));
         t.velocity = 0.0f;
-        t.kp       = 50.0f;
-        t.kd       = 2.0f;
+        t.kp       = (id == 127) ? 200.0f : 80.0f;
+        t.kd       = (id == 127) ? 10.0f  : 3.0f;
         t.torque   = 0.0f;
         return t;
     });
     if (!ok) goto done;
 
-    // Phase 2 — Step +0.8 rad from each origin, hold 2s
+    // Phase 2 — Step +1.0 rad from each origin, hold 2s
     ok = runPhase("step_hold", 200, [&](uint8_t id, int) {
         float org = origins.count(id) ? origins.at(id) : 0.0f;
         MotorTarget t;
-        t.angle    = org + 0.8f;
+        t.angle    = org + 1.0f;
         t.velocity = 0.0f;
         t.kp       = 80.0f;
         t.kd       = 3.0f;
@@ -138,21 +141,8 @@ int main() {
     });
     if (!ok) goto done;
 
-    // Phase 3 — Velocity hold +2 rad/s on all motors simultaneously
-    // KEY TEST: measured Hz should stay near 200 with N motors
-    ok = runPhase("vel_hold", 200, [&](uint8_t, int) {
-        MotorTarget t;
-        t.angle    = 0.0f;
-        t.velocity = 2.0f;
-        t.kp       = 0.0f;
-        t.kd       = 5.0f;
-        t.torque   = 0.0f;
-        return t;
-    });
-    if (!ok) goto done;
-
-    // Phase 4 — Return all to origin
-    ok = runPhase("return", 200, [&](uint8_t id, int) {
+    // Phase 3 — Return all to origin (400 cycles = 4s, enough for accel ramp)
+    ok = runPhase("return", 400, [&](uint8_t id, int) {
         float org = origins.count(id) ? origins.at(id) : 0.0f;
         MotorTarget t;
         t.angle    = org;
