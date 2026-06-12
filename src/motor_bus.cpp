@@ -159,6 +159,13 @@ bool MotorBus::isFaulted(uint8_t id) {
     return it->second.faulted;
 }
 
+bool MotorBus::isStale(uint8_t id) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto it = motors_.find(id);
+    if (it == motors_.end()) return false;
+    return it->second.stale;
+}
+
 bool MotorBus::clearFault(uint8_t id) {
     std::lock_guard<std::mutex> lock(mutex_);
     auto it = motors_.find(id);
@@ -315,6 +322,7 @@ void MotorBus::controlLoop() {
             std::lock_guard<std::mutex> lock(mutex_);
             CANFrame rx = {};
             int frames_received = 0;
+            auto now = std::chrono::steady_clock::now();
 
             // Drain all available frames — stops immediately when socket is empty
             while (transport_.recvNonBlocking(rx)) {
@@ -356,6 +364,36 @@ void MotorBus::controlLoop() {
                 }
             } else {
                 busoff_count_ = 0;  // reset on any successful receive
+            }
+
+            // --- Per-motor staleness watchdog ---
+            // Tracks consecutive cycles since each motor's last feedback.
+            // 20 cycles (~100ms) -> mark stale, keep sending last-known commands.
+            // 100 cycles (~500ms) -> auto-disable, this joint is gone.
+            for (auto& [id, entry] : motors_) {
+                if (!entry.enabled) continue;
+
+                auto age = std::chrono::duration<float, std::milli>(
+                    now - entry.state.last_update).count();
+
+                if (age > 5.0f) {
+                    // No fresh feedback this cycle
+                    entry.stale_cycles++;
+                } else {
+                    entry.stale_cycles = 0;
+                    entry.stale        = false;
+                }
+
+                if (entry.stale_cycles >= 20 && !entry.stale) {
+                    entry.stale = true;
+                    fprintf(stderr, "[STALE] Motor %d — no feedback for >100ms\n", id);
+                }
+
+                if (entry.stale_cycles >= 100) {
+                    entry.enabled = false;
+                    entry.faulted = true;
+                    fprintf(stderr, "[STALE] Motor %d — no feedback for >500ms, auto-disabled\n", id);
+                }
             }
         }
 

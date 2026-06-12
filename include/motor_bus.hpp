@@ -29,6 +29,8 @@ struct MotorEntry {
     MotorState     state;
     bool           enabled     = false;
     bool           faulted     = false;
+    bool           stale       = false;  // no feedback for >100ms, still enabled
+    int            stale_cycles = 0;     // consecutive cycles with no feedback
 
     // Acceleration ramp state
     float interpolated_angle      = 0.0f;  // current ramp position (rad)
@@ -79,6 +81,7 @@ public:
 
     // --- Fault ---
     bool isFaulted(uint8_t id);
+    bool isStale(uint8_t id);  // true if no feedback for >100ms (20 cycles @ 200Hz)
     bool clearFault(uint8_t id);  // disable(clear_fault=true) + resets faulted flag
 
     // --- Control thread ---
