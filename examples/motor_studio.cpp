@@ -126,8 +126,8 @@ bool handleCommand(const std::string& line, MotorBus& bus) {
         printf("All motors disabled.\n");
 
     } else if (cmd == "sel") {
-        uint8_t id; ss >> id;
-        g_sel = id;
+        int id; ss >> id;
+        g_sel = static_cast<uint8_t>(id);
         printf("Selected motor %d.\n", id);
 
     } else if (cmd == "pos") {
