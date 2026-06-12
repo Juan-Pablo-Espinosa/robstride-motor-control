@@ -97,7 +97,8 @@ public:
     // --- Introspection ---
     std::vector<uint8_t> motorIds() const;
     int   getHz()       const { return hz_; }
-    float measuredHz()  const { return measured_hz_; }
+    float measuredHz()      const { return measured_hz_; }
+    int   busOffRecoveries() const { return busoff_recover_; }
 
 private:
     Transport&  transport_;
@@ -109,7 +110,10 @@ private:
     std::thread        control_thread_;
     std::atomic<bool>  running_  { false };
     std::atomic<bool>  estop_    { false };   // set by emergencyStop()
-    std::atomic<float> measured_hz_ { 0.0f };
+    std::atomic<float> measured_hz_    { 0.0f };
+    std::atomic<int>   busoff_count_   { 0 };
+    std::atomic<int>   busoff_recover_ { 0 };  // increments each recovery
 
+    bool recoverBusOff();
     void controlLoop();
 };

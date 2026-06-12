@@ -91,8 +91,6 @@ bool MotorBus::enable(uint8_t id) {
     if (it == motors_.end()) return false;
     bool ok = it->second.motor.enable();
         if (ok) {
-            // Always force MIT mode — motors remember run_mode across power cycles
-            it->second.motor.setRunMode(RunMode::MIT);
             it->second.enabled = true;
             // Immediately populate state so getState() after enable() is never stale zeros.
             // enable() already got a feedback frame — request one more to fill entry.state.
@@ -120,7 +118,6 @@ void MotorBus::enableAll() {
     std::lock_guard<std::mutex> lock(mutex_);
     for (auto& [id, entry] : motors_) {
         if (entry.motor.enable()) {
-            entry.motor.setRunMode(RunMode::MIT);
             entry.enabled = true;
             entry.motor.requestFeedback(entry.state);
             entry.interpolated_angle      = entry.state.angle;
@@ -136,20 +133,6 @@ void MotorBus::disableAll() {
         entry.motor.disable(false);
         entry.enabled = false;
     }
-}
-
-bool MotorBus::setZero(uint8_t id) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    auto it = motors_.find(id);
-    if (it == motors_.end()) return false;
-    bool ok = it->second.motor.setZero();
-    if (ok) {
-        // Reseed ramp from new zero position
-        it->second.motor.requestFeedback(it->second.state);
-        it->second.interpolated_angle      = it->second.state.angle;
-        it->second.prev_interpolated_angle = it->second.state.angle;
-    }
-    return ok;
 }
 
 bool MotorBus::isFaulted(uint8_t id) {
@@ -202,46 +185,6 @@ void MotorBus::stop() {
     disableAll();
 }
 
-bool MotorBus::recoverBusOff() {
-    fprintf(stderr, "[BUS-OFF] Detected — reinitializing can1...\n");
-
-    // Bring interface down, reconfigure, bring back up
-    int r = 0;
-    r |= system("sudo ip link set can1 down");
-    r |= system("sudo ip link set can1 type can bitrate 1000000");
-    r |= system("sudo ip link set can1 up");
-
-    if (r != 0) {
-        fprintf(stderr, "[BUS-OFF] Recovery failed — check sudoers\n");
-        return false;
-    }
-
-    // Reopen the socket — the old fd is dead after interface bounce
-    transport_.close();
-    if (!transport_.open()) {
-        fprintf(stderr, "[BUS-OFF] Failed to reopen transport\n");
-        return false;
-    }
-
-    // Re-enable all motors that were enabled before BUS-OFF
-    for (auto& [id, entry] : motors_) {
-        if (entry.enabled) {
-            entry.motor.enable();
-            entry.motor.setRunMode(RunMode::MIT);
-            entry.motor.requestFeedback(entry.state);
-            entry.interpolated_angle      = entry.state.angle;
-            entry.prev_interpolated_angle = entry.state.angle;
-            entry.ramp_initialized        = true;
-        }
-    }
-
-    busoff_count_   = 0;
-    busoff_recover_ = busoff_recover_ + 1;
-    fprintf(stderr, "[BUS-OFF] Recovery complete (total recoveries: %d)\n",
-            busoff_recover_.load());
-    return true;
-}
-
 void MotorBus::controlLoop() {
     using clock    = std::chrono::steady_clock;
     using duration = std::chrono::duration<double>;
@@ -270,7 +213,7 @@ void MotorBus::controlLoop() {
             break;
         }
 
-        // --- Phase 1: send MIT to all enabled motors (no recv) ---
+        // --- Send MIT commands and read feedback for all enabled motors ---
         {
             const float dt = 1.0f / static_cast<float>(hz_);
 
@@ -285,10 +228,12 @@ void MotorBus::controlLoop() {
                 float cmd_vel;
 
                 if (max_accel < 0.0f || !entry.ramp_initialized) {
+                    // Unlimited / passthrough — use target directly
                     cmd_angle = t.angle;
                     cmd_vel   = t.velocity;
                 } else {
-                    const float max_step = max_accel * dt;
+                    // Acceleration-limited ramp
+                    const float max_step = max_accel * dt;  // rad per cycle
                     const float error    = t.angle - entry.interpolated_angle;
 
                     entry.prev_interpolated_angle = entry.interpolated_angle;
@@ -301,61 +246,21 @@ void MotorBus::controlLoop() {
                         entry.interpolated_angle = t.angle;
                     }
 
+                    // Feedforward velocity = how fast we're moving the interpolated target
                     cmd_vel   = (entry.interpolated_angle - entry.prev_interpolated_angle) / dt;
                     cmd_angle = entry.interpolated_angle;
                 }
 
                 entry.motor.sendMIT(cmd_angle, cmd_vel, t.kp, t.kd, t.torque);
-            }
-        }
-
-        // --- Phase 2: wait 2ms for motors to respond, then drain non-blocking ---
-        std::this_thread::sleep_for(std::chrono::milliseconds(2));
-        {
-            std::lock_guard<std::mutex> lock(mutex_);
-            CANFrame rx = {};
-            int frames_received = 0;
-
-            // Drain all available frames — stops immediately when socket is empty
-            while (transport_.recvNonBlocking(rx)) {
-                frames_received++;
-                uint8_t comm     = (rx.can_id >> 24) & 0x1F;
-                uint8_t reply_id = (rx.can_id >> 8) & 0xFF;
-                if (comm != COMM_FEEDBACK) continue;
-
-                auto it = motors_.find(reply_id);
-                if (it == motors_.end()) continue;
-
-                MotorEntry& entry = it->second;
-                if (!entry.enabled) continue;
-
-                if (entry.motor.parseFeedback(rx, entry.state)) {
+                if (entry.motor.requestFeedback(entry.state)) {
                     entry.state.last_update = std::chrono::steady_clock::now();
                     if (entry.state.fault != 0) {
                         entry.faulted = true;
                         entry.enabled = false;
                         fprintf(stderr, "[FAULT] Motor %d fault code: 0x%02X — auto-disabled\n",
-                                reply_id, entry.state.fault);
+                                id, entry.state.fault);
                     }
                 }
-            }
-
-            // --- BUS-OFF detection ---
-            // Count enabled motors — if there are any and we got zero frames,
-            // the bus may be dead. After 50 consecutive silent cycles (~250ms),
-            // attempt recovery.
-            int enabled_count = 0;
-            for (auto& [id, entry] : motors_) {
-                if (entry.enabled) enabled_count++;
-            }
-
-            if (enabled_count > 0 && frames_received == 0) {
-                busoff_count_++;
-                if (busoff_count_ >= 50) {
-                    recoverBusOff();  // resets busoff_count_ on success
-                }
-            } else {
-                busoff_count_ = 0;  // reset on any successful receive
             }
         }
 
