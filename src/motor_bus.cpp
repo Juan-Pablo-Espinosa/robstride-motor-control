@@ -211,15 +211,17 @@ void MotorBus::stop() {
 
 bool MotorBus::recoverBusOff() {
     fprintf(stderr, "[BUS-OFF] Detected — reinitializing can1...\n");
+    std::lock_guard<std::mutex> lock(mutex_);
 
-    // Bring interface down, reconfigure, bring back up
+    // Bound each command to 2 seconds — never let a hung `ip` call
+    // freeze the control loop indefinitely.
     int r = 0;
-    r |= system("sudo ip link set can1 down");
-    r |= system("sudo ip link set can1 type can bitrate 1000000");
-    r |= system("sudo ip link set can1 up");
+    r |= system("timeout 2 sudo ip link set can1 down");
+    r |= system("timeout 2 sudo ip link set can1 type can bitrate 1000000");
+    r |= system("timeout 2 sudo ip link set can1 up");
 
     if (r != 0) {
-        fprintf(stderr, "[BUS-OFF] Recovery failed — check sudoers\n");
+        fprintf(stderr, "[BUS-OFF] Recovery failed or timed out — check sudoers/interface\n");
         return false;
     }
 
@@ -252,6 +254,8 @@ bool MotorBus::recoverBusOff() {
 void MotorBus::controlLoop() {
     using clock    = std::chrono::steady_clock;
     using duration = std::chrono::duration<double>;
+
+    bool need_recovery = false;
 
     const auto period = std::chrono::microseconds(1000000 / hz_);
     auto next_wake    = clock::now();
@@ -360,7 +364,7 @@ void MotorBus::controlLoop() {
             if (enabled_count > 0 && frames_received == 0) {
                 busoff_count_++;
                 if (busoff_count_ >= 50) {
-                    recoverBusOff();  // resets busoff_count_ on success
+                    need_recovery = true;
                 }
             } else {
                 busoff_count_ = 0;  // reset on any successful receive
@@ -377,7 +381,6 @@ void MotorBus::controlLoop() {
                     now - entry.state.last_update).count();
 
                 if (age > 5.0f) {
-                    // No fresh feedback this cycle
                     entry.stale_cycles++;
                 } else {
                     entry.stale_cycles = 0;
@@ -395,6 +398,11 @@ void MotorBus::controlLoop() {
                     fprintf(stderr, "[STALE] Motor %d — no feedback for >500ms, auto-disabled\n", id);
                 }
             }
+        }
+        // --- BUS-OFF recovery (outside the lock — recoverBusOff() locks internally) ---
+        if (need_recovery) {
+            recoverBusOff();
+            need_recovery = false;
         }
 
         // --- Measure actual loop rate every second ---
