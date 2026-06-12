@@ -274,6 +274,7 @@ Extract motor ID from response: (rx.can_id >> 8) & 0xFF
 - MCP2518FD BUS-OFF on reconnect of a previously disconnected motor — bring CAN back up with setup.sh
 - Factory default motor ID is 127 — always scan before assuming
 - motor_studio hardcodes RS-03 model for all motors — use addMotor() with correct config in production
+- If a motor stops responding to commands despite OK status, fully disconnect and reconnect its power — a CAN-only bounce may not clear stale internal state
 
 ---
 
