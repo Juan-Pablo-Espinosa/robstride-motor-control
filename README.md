@@ -30,7 +30,7 @@ Developed as part of the **GR-0X humanoid robot project** by
 
 ## Hardware Requirements
 
-- Linux SBC with SocketCAN (tested: Raspberry Pi 5, Bookworm 64-bit)
+- Linux SBC with SocketCAN (tested: Raspberry Pi 5, Ubuntu Server 24.04 LTS 64-bit)
 - CAN controller at 1 Mbps (tested: PiCAN FD Duo ISO HAT, MCP2518FD)
 - RobStride RS-00 through RS-06 actuators
 - Separate 24-48V power supply for motors
@@ -53,30 +53,33 @@ Developed as part of the **GR-0X humanoid robot project** by
 
 ## Quick Start
 
-### 1. Install dependencies
+### 1. Flash Ubuntu Server 24.04 LTS (64-bit) to your Raspberry Pi 5
+Use [Raspberry Pi Imager](https://www.raspberrypi.com/software/):
+- Device: Raspberry Pi 5
+- OS: Other general-purpose OS → Ubuntu → Ubuntu Server 24.04 LTS (64-bit)
+- Enable SSH and set hostname `GR0X-PI`, username `gr0x-pi`
 
-    sudo apt install cmake build-essential can-utils libncurses-dev
+### 2. Clone the repo
+    git clone https://github.com/Juan-Pablo-Espinosa/robstride-motor-control.git ~/gr0x-motor
+    cd ~/gr0x-motor
 
-### 2. Clone and build
+### 3. Run first-time setup
+    ./install_deps.sh
 
-    git clone https://github.com/Juan-Pablo-Espinosa/robstride-motor-control.git
-    cd robstride-motor-control
-    mkdir build && cd build
-    cmake ..
-    make -j4
+This installs all dependencies, configures the PiCAN FD Duo ISO HAT overlays,
+sets up passwordless CAN bringup, and builds the library. Reboot after it completes.
 
-### 3. Bring up CAN interfaces
+    sudo reboot
 
-    sudo ./setup.sh
+### 4. Bring up CAN interfaces (run once per boot)
+    sudo ~/gr0x-motor/setup.sh
 
-### 4. Find your motor IDs
-
-    cd build && ./scan_test
+### 5. Find your motor IDs
+    cd ~/gr0x-motor/build && ./scan_test
 
 Factory default ID is 127.
 
-### 5. Run the starter template
-
+### 6. Run the starter template
     ./template
 
 ---
