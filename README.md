@@ -272,6 +272,44 @@ If you changed the ROS node:
 
 ---
 
+## Auto-Start on Boot (systemd)
+
+After running `install_deps.sh`, two systemd services start automatically on every boot:
+
+**gr0x-can.service** — brings up can0 and can1 at 1Mbps before anything else
+**gr0x-motor.service** — starts the ROS 2 node after CAN is ready
+
+### Check service status
+    sudo systemctl status gr0x-can.service
+    sudo systemctl status gr0x-motor.service
+
+### View live node logs
+    sudo journalctl -u gr0x-motor.service -f
+
+### Restart the node (after changing joints.yaml for example)
+    sudo systemctl restart gr0x-motor.service
+
+### Stop everything
+    sudo systemctl stop gr0x-motor.service
+    sudo systemctl stop gr0x-can.service
+
+### Disable auto-start (for development/testing)
+    sudo systemctl disable gr0x-motor.service
+
+### Re-enable auto-start
+    sudo systemctl enable gr0x-motor.service
+
+The service files live in `systemd/` in this repo and are installed by `install_deps.sh`.
+To modify them, edit the files in `systemd/`, commit, pull on the Pi, then re-run:
+
+    sudo cp ~/gr0x-motor/systemd/gr0x-can.service /etc/systemd/system/
+    sudo cp ~/gr0x-motor/systemd/gr0x-motor.service /etc/systemd/system/
+    sudo systemctl daemon-reload
+    sudo systemctl restart gr0x-motor.service
+
+
+---
+
 ## API Overview
 
 ### MotorConfig
