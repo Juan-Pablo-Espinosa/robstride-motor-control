@@ -1,7 +1,7 @@
 #!/bin/bash
 # ---------------------------------------------------------------------------
 # install_deps.sh — GR-0X Pi first-time setup
-# Run once on a fresh Ubuntu 24.04 image.
+# Run once on a fresh Ubuntu 24.04 LTS image.
 # Usage: ./install_deps.sh
 # ---------------------------------------------------------------------------
 set -e
@@ -16,12 +16,45 @@ sudo apt install -y \
     can-utils \
     libncurses-dev \
     git \
-    tree
+    tree \
+    curl \
+    software-properties-common
+
+echo ""
+echo "=== Adding ROS 2 Jazzy apt repo ==="
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+    -o /usr/share/keyrings/ros-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
+http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
+    | sudo tee /etc/apt/sources.list.d/ros2.list
+sudo apt update
+
+echo ""
+echo "=== Pinning libs to ROS 2 Jazzy-compatible versions ==="
+sudo apt install -y --allow-downgrades \
+    liblz4-1=1.9.4-1build1 \
+    libzstd1=1.5.5+dfsg2-2build1 \
+    zlib1g=1:1.3.dfsg-3.1ubuntu2
+echo "liblz4-1 hold
+libzstd1 hold
+zlib1g hold" | sudo dpkg --set-selections
+
+echo ""
+echo "=== Installing ROS 2 Jazzy base ==="
+sudo apt install -y ros-jazzy-ros-base python3-colcon-common-extensions
+
+echo ""
+echo "=== Configuring ROS 2 in shell ==="
+if ! grep -q "ros/jazzy/setup.bash" ~/.bashrc; then
+    echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
+    echo "  Added ROS 2 source to ~/.bashrc"
+else
+    echo "  ROS 2 already in ~/.bashrc, skipping"
+fi
 
 echo ""
 echo "=== Configuring PiCAN FD Duo ISO HAT ==="
 CONFIG=/boot/firmware/config.txt
-
 if ! grep -q "mcp251xfd" $CONFIG; then
     echo "dtparam=spi=on" | sudo tee -a $CONFIG
     echo "dtoverlay=mcp251xfd,spi0-0,oscillator=40000000,interrupt=25" | sudo tee -a $CONFIG
@@ -52,6 +85,7 @@ make -j4
 
 echo ""
 echo "=== Done! Next steps: ==="
-echo "  1. Reboot for HAT overlays to take effect: sudo reboot"
+echo "  1. Reboot for HAT overlays: sudo reboot"
 echo "  2. After reboot, bring up CAN: sudo ~/gr0x-motor/setup.sh"
-echo "  3. Test: cd ~/gr0x-motor/build && ./scan_test"
+echo "  3. Test motors: cd ~/gr0x-motor/build && ./scan_test"
+echo "  4. Source ROS 2 (or open new terminal): source /opt/ros/jazzy/setup.bash"
