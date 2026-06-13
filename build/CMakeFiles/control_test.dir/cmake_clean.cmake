@@ -1,5 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/control_test.dir/link.d"
   "CMakeFiles/control_test.dir/test/control_test.cpp.o"
   "CMakeFiles/control_test.dir/test/control_test.cpp.o.d"
   "control_test"
