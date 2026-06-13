@@ -1,0 +1,18 @@
+[Unit]
+Description=GR-0X CAN interface bringup
+After=network.target
+Before=gr0x-motor.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c '\
+  ip link set can0 down 2>/dev/null || true && \
+  ip link set can0 type can bitrate 1000000 && \
+  ip link set can0 up && \
+  ip link set can1 down 2>/dev/null || true && \
+  ip link set can1 type can bitrate 1000000 && \
+  ip link set can1 up'
+
+[Install]
+WantedBy=multi-user.target

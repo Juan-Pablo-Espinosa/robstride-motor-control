@@ -84,6 +84,14 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j4
 
 echo ""
+echo "=== Installing systemd services ==="
+sudo cp "$(dirname "$0")/systemd/gr0x-can.service" /etc/systemd/system/
+sudo cp "$(dirname "$0")/systemd/gr0x-motor.service" /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable gr0x-can.service gr0x-motor.service
+echo "  Services installed and enabled"
+
+echo ""
 echo "=== Building ROS 2 node ==="
 source /opt/ros/jazzy/setup.bash
 mkdir -p ~/gr0x-ws/src
