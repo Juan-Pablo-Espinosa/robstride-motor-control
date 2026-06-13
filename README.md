@@ -80,7 +80,7 @@ sets up passwordless CAN bringup, and builds the library. Reboot after it comple
 Factory default ID is 127.
 
 ### 6. Run the starter template
-    ./template
+    ./showcase_all
 
 ---
 
