@@ -84,8 +84,17 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j4
 
 echo ""
+echo "=== Building ROS 2 node ==="
+source /opt/ros/jazzy/setup.bash
+mkdir -p ~/gr0x-ws/src
+ln -sf ~/gr0x-motor/ros2 ~/gr0x-ws/src/gr0x_motor_node
+cd ~/gr0x-ws
+colcon build --symlink-install
+echo "source ~/gr0x-ws/install/setup.bash" >> ~/.bashrc
+
+echo ""
 echo "=== Done! Next steps: ==="
 echo "  1. Reboot for HAT overlays: sudo reboot"
 echo "  2. After reboot, bring up CAN: sudo ~/gr0x-motor/setup.sh"
 echo "  3. Test motors: cd ~/gr0x-motor/build && ./scan_test"
-echo "  4. Source ROS 2 (or open new terminal): source /opt/ros/jazzy/setup.bash"
+echo "  4. Run ROS node: ros2 run gr0x_motor_node gr0x_motor_node"

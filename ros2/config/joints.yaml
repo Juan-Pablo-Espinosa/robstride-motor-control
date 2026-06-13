@@ -1,0 +1,25 @@
+joints:
+  - name: "knee_right"
+    id: 42
+    model: 3        # RS-03
+    min_angle: -3.14
+    max_angle: 3.14
+    max_torque: 40.0
+    max_velocity: 10.0
+    max_acceleration: 5.0
+    invert: false
+    kp: 100.0
+    kd: 5.0
+
+  - name: "hip_right"
+    id: 127
+    model: 4        # RS-04
+    min_angle: -3.14
+    max_angle: 3.14
+    max_torque: 60.0
+    max_velocity: 8.0
+    max_acceleration: 5.0
+    invert: false
+    kp: 100.0
+    kd: 5.0
+
