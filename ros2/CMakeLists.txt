@@ -34,7 +34,16 @@ ament_target_dependencies(gr0x_motor_node
   sensor_msgs
 )
 
-install(TARGETS gr0x_motor_node
+add_executable(walking_test_node
+  src/walking_test_node.cpp
+)
+
+ament_target_dependencies(walking_test_node
+  rclcpp
+  sensor_msgs
+)
+
+install(TARGETS gr0x_motor_node walking_test_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
