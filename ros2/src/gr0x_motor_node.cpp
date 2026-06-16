@@ -46,7 +46,7 @@ public:
         YAML::Node cfg = YAML::LoadFile(config_path);
 
         // Load each leg section
-        for (const std::string& leg_name : {"left_leg", "right_leg"}) {
+        for (const std::string leg_name : {"left_leg", "right_leg"}) {
             if (!cfg[leg_name]) continue;
             auto leg_node = cfg[leg_name];
 

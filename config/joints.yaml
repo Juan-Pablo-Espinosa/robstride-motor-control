@@ -1,25 +1,119 @@
-joints:
-  - name: "knee_right"
-    id: 42
-    model: 3        # RS-03
-    min_angle: -3.14
-    max_angle: 3.14
-    max_torque: 40.0
-    max_velocity: 10.0
-    max_acceleration: 5.0
-    invert: false
-    kp: 100.0
-    kd: 5.0
+# GR-0X Joint Configuration
+# Units: angles in radians, torque in Nm, velocity in rad/s, acceleration in rad/s²
+# Model enum: RS00=0 RS01=1 RS02=2 RS03=3 RS04=4 RS05=5 RS06=6
 
-  - name: "hip_right"
-    id: 127
-    model: 4        # RS-04
-    min_angle: -3.14
-    max_angle: 3.14
-    max_torque: 60.0
-    max_velocity: 8.0
-    max_acceleration: 5.0
-    invert: false
-    kp: 100.0
-    kd: 5.0
+# Bus assignment:
+#   can1 = left leg
+#   can0 = right leg (not yet wired — set enabled: false)
 
+left_leg:
+  enabled: true
+  can_interface: "can1"
+  joints:
+    - name: "left_hip_pitch"
+      id: 1
+      model: 4        # RS-04
+      min_angle: -0.75
+      max_angle: 1.5
+      idle_angle: 0.34
+      max_torque: 80.0
+      max_velocity: 8.0
+      max_acceleration: 5.0
+      invert: false
+      kp: 100.0
+      kd: 5.0
+
+    - name: "left_hip_roll"
+      id: 2
+      model: 3        # RS-03
+      min_angle: -0.65
+      max_angle: 0.27
+      idle_angle: 0.0
+      max_torque: 40.0
+      max_velocity: 10.0
+      max_acceleration: 5.0
+      invert: false
+      kp: 100.0
+      kd: 5.0
+
+    - name: "left_knee_pitch"
+      id: 3
+      model: 4        # RS-04
+      min_angle: 0.2
+      max_angle: 1.8
+      idle_angle: 0.67
+      max_torque: 80.0
+      max_velocity: 8.0
+      max_acceleration: 5.0
+      invert: false
+      kp: 100.0
+      kd: 5.0
+
+    - name: "left_ankle_pitch"
+      id: 4
+      model: 2        # RS-02
+      min_angle: -0.5
+      max_angle: 0.75
+      idle_angle: 0.35
+      max_torque: 15.0
+      max_velocity: 10.0
+      max_acceleration: 2.0
+      invert: false
+      kp: 50.0
+      kd: 3.0
+
+right_leg:
+  enabled: false      # not yet wired — set to true when hardware is ready
+  can_interface: "can0"
+  joints:
+    - name: "right_hip_pitch"
+      id: 1
+      model: 4        # RS-04
+      min_angle: -0.75
+      max_angle: 1.5
+      idle_angle: 0.34
+      max_torque: 80.0
+      max_velocity: 8.0
+      max_acceleration: 5.0
+      invert: true    # mirrored
+      kp: 100.0
+      kd: 5.0
+
+    - name: "right_hip_roll"
+      id: 2
+      model: 3        # RS-03
+      min_angle: -0.27
+      max_angle: 0.65
+      idle_angle: 0.0
+      max_torque: 40.0
+      max_velocity: 10.0
+      max_acceleration: 5.0
+      invert: true    # mirrored
+      kp: 100.0
+      kd: 5.0
+
+    - name: "right_knee_pitch"
+      id: 3
+      model: 4        # RS-04
+      min_angle: 0.2
+      max_angle: 1.8
+      idle_angle: 0.67
+      max_torque: 80.0
+      max_velocity: 8.0
+      max_acceleration: 5.0
+      invert: true    # mirrored
+      kp: 100.0
+      kd: 5.0
+
+    - name: "right_ankle_pitch"
+      id: 4
+      model: 2        # RS-02
+      min_angle: -0.75
+      max_angle: 0.5
+      idle_angle: 0.35
+      max_torque: 15.0
+      max_velocity: 10.0
+      max_acceleration: 2.0
+      invert: true    # mirrored
+      kp: 50.0
+      kd: 3.0
