@@ -1,12 +1,12 @@
 // walking_test_node.cpp — GR-0X Left Leg Walking Demo
-// Simulates Jetson RL policy output for testing without the Jetson.
-// Moves all 4 left leg joints in a coordinated slow walking gait.
+// Plays back keyframe gait trajectory, interpolating smoothly between poses.
+// Simulates Jetson RL policy output for hardware validation without the Jetson.
 //
 // Sequence:
-//   1. Move to idle position and hold 3 seconds
-//   2. Walk for 10 cycles (~20 seconds)
-//   3. Return to idle and hold
-//   4. Shutdown
+//   1. Smooth transition from current idle to first keyframe (3 seconds)
+//   2. Loop through all keyframes 5 times
+//   3. Smooth return to idle position
+//   4. Hold idle — Ctrl+C to exit
 //
 // Publish: /joint_commands (sensor_msgs/JointState) at 50Hz
 
@@ -14,138 +14,154 @@
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <cmath>
 #include <vector>
+#include <array>
 #include <string>
+
+using Pose = std::array<float, 4>;  // [hip_pitch, hip_roll, knee_pitch, ankle_pitch]
+
+// Smooth interpolation — ease in/out using cosine
+float smoothstep(float t) {
+    t = std::max(0.0f, std::min(1.0f, t));
+    return t * t * (3.0f - 2.0f * t);
+}
+
+float lerp(float a, float b, float t) {
+    return a + (b - a) * smoothstep(t);
+}
+
+Pose lerpPose(const Pose& a, const Pose& b, float t) {
+    return {lerp(a[0], b[0], t),
+            lerp(a[1], b[1], t),
+            lerp(a[2], b[2], t),
+            lerp(a[3], b[3], t)};
+}
 
 class WalkingTestNode : public rclcpp::Node {
 public:
-    WalkingTestNode() : Node("walking_test_node"), cycle_(0.0), phase_(IDLE_START) {
+    WalkingTestNode() : Node("walking_test_node") {
 
         pub_ = create_publisher<sensor_msgs::msg::JointState>("/joint_commands", 1);
 
-        // 50Hz timer — same rate as motor node publishes states
         timer_ = create_wall_timer(
-            std::chrono::milliseconds(20),
+            std::chrono::milliseconds(20),  // 50Hz
             [this]() { update(); });
 
         start_time_ = now();
-        RCLCPP_INFO(get_logger(), "Walking test node started — moving to idle position...");
+        phase_start_ = now();
+        RCLCPP_INFO(get_logger(), "Walking test — transitioning to start pose...");
     }
 
 private:
-    // --- Gait parameters ---
-    // All values in radians, tuned for a hanging leg (no ground contact)
+    // --- Joint order: hip_pitch, hip_roll, knee_pitch, ankle_pitch ---
 
-    // Idle (neutral standing) angles from joints.yaml
-    const float IDLE_HIP_PITCH  =  0.34f;
-    const float IDLE_HIP_ROLL   =  0.0f;
-    const float IDLE_KNEE_PITCH =  0.67f;
-    const float IDLE_ANKLE_PITCH=  0.35f;
+    // Idle position (from joints.yaml)
+    const Pose IDLE = {0.34f, 0.0f, 0.67f, 0.35f};
 
-    // Walking amplitude per joint — conservative for first test
-    const float AMP_HIP_PITCH   =  0.25f;  // swing forward/back
-    const float AMP_HIP_ROLL    =  0.08f;  // lateral sway
-    const float AMP_KNEE_PITCH  =  0.20f;  // knee flex
-    const float AMP_ANKLE_PITCH =  0.10f;  // ankle push
+    // Gait keyframes — verified against joint limits
+    const std::vector<Pose> KEYFRAMES = {
+        { 0.60f,  0.00f,  1.57f,  0.00f},  // 1: heel strike
+        { 0.78f,  0.10f,  0.70f, -0.15f},  // 2: early stance
+        { 0.60f,  0.20f,  0.50f, -0.25f},  // 3: mid stance
+        {-0.20f,  0.10f,  0.20f,  0.25f},  // 4: late stance
+        {-0.35f,  0.00f,  0.20f,  0.20f},  // 5: toe off (knee clamped to 0.2)
+        {-0.45f, -0.10f,  0.78f,  0.60f},  // 6: early swing
+        {-0.65f, -0.20f,  1.00f, -0.45f},  // 7: mid swing
+        { 0.30f, -0.10f,  1.75f, -0.20f},  // 8: late swing
+    };
 
-    // Gait timing
-    const float GAIT_PERIOD_S   =  2.0f;   // seconds per full stride
-    const float IDLE_HOLD_S     =  3.0f;   // seconds to hold idle before walking
-    const int   WALK_CYCLES     =  10;     // number of stride cycles
-    const float RETURN_HOLD_S   =  3.0f;   // seconds to hold idle at end
+    // Timing
+    const float TRANSITION_S   = 3.0f;   // seconds to move from idle to first keyframe
+    const float TIME_PER_POSE_S= 0.5f;   // seconds between keyframes (slow and smooth)
+    const int   LOOP_COUNT     = 5;      // how many times to loop keyframes
+    const float RETURN_S       = 3.0f;   // seconds to return to idle
 
-    enum Phase { IDLE_START, WALKING, IDLE_END, DONE };
+    enum Phase { TRANSITION, WALKING, RETURNING, DONE };
+    Phase phase_ = TRANSITION;
 
     void update() {
-        auto elapsed = (now() - start_time_).seconds();
-        auto msg = sensor_msgs::msg::JointState();
-        msg.header.stamp = now();
-        msg.name = {"left_hip_pitch", "left_hip_roll",
-                    "left_knee_pitch", "left_ankle_pitch"};
-        msg.velocity = {0.0, 0.0, 0.0, 0.0};
-        msg.effort   = {0.0, 0.0, 0.0, 0.0};
-        msg.position.resize(4);
+        float t = (now() - phase_start_).seconds();
+        Pose cmd;
 
         switch (phase_) {
 
-        case IDLE_START:
-            // Hold idle position
-            msg.position = {IDLE_HIP_PITCH, IDLE_HIP_ROLL,
-                            IDLE_KNEE_PITCH, IDLE_ANKLE_PITCH};
-            if (elapsed > IDLE_HOLD_S) {
+        case TRANSITION: {
+            // Smooth move from idle to first keyframe
+            float alpha = t / TRANSITION_S;
+            cmd = lerpPose(IDLE, KEYFRAMES[0], alpha);
+            if (alpha >= 1.0f) {
                 phase_ = WALKING;
-                walk_start_time_ = now();
-                RCLCPP_INFO(get_logger(), "Starting walking gait...");
-            }
-            break;
-
-        case WALKING: {
-            float t = (now() - walk_start_time_).seconds();
-            float total_walk_time = GAIT_PERIOD_S * WALK_CYCLES;
-
-            // Phase angle for gait — one full cycle = 2*pi
-            float phi = 2.0f * M_PI * t / GAIT_PERIOD_S;
-
-            // Hip pitch — main forward/back swing
-            // sin wave: forward on positive half, back on negative
-            float hip_pitch = IDLE_HIP_PITCH + AMP_HIP_PITCH * std::sin(phi);
-
-            // Hip roll — lateral sway, 90 degrees offset from hip pitch
-            float hip_roll = IDLE_HIP_ROLL + AMP_HIP_ROLL * std::sin(phi + M_PI / 2.0f);
-
-            // Knee pitch — flex on swing phase (when hip moves forward)
-            // Always positive (knee only bends one way), extra flex during swing
-            float knee_pitch = IDLE_KNEE_PITCH
-                + AMP_KNEE_PITCH * (1.0f - std::cos(phi)) / 2.0f;
-
-            // Ankle pitch — push off at end of stance, dorsiflexion during swing
-            float ankle_pitch = IDLE_ANKLE_PITCH
-                - AMP_ANKLE_PITCH * std::sin(phi);
-
-            msg.position = {hip_pitch, hip_roll, knee_pitch, ankle_pitch};
-
-            // Log progress every stride
-            int current_cycle = static_cast<int>(t / GAIT_PERIOD_S);
-            if (current_cycle > last_logged_cycle_) {
-                last_logged_cycle_ = current_cycle;
-                RCLCPP_INFO(get_logger(), "Stride %d / %d", current_cycle + 1, WALK_CYCLES);
-            }
-
-            if (t > total_walk_time) {
-                phase_ = IDLE_END;
-                idle_end_start_ = now();
-                RCLCPP_INFO(get_logger(), "Walking complete — returning to idle...");
+                phase_start_ = now();
+                walk_keyframe_ = 0;
+                walk_loop_ = 0;
+                RCLCPP_INFO(get_logger(), "Starting gait — loop 1/%d", LOOP_COUNT);
             }
             break;
         }
 
-        case IDLE_END:
-            // Return to idle and hold
-            msg.position = {IDLE_HIP_PITCH, IDLE_HIP_ROLL,
-                            IDLE_KNEE_PITCH, IDLE_ANKLE_PITCH};
-            if ((now() - idle_end_start_).seconds() > RETURN_HOLD_S) {
+        case WALKING: {
+            // Interpolate between consecutive keyframes
+            int n = KEYFRAMES.size();
+            int from_idx = walk_keyframe_ % n;
+            int to_idx   = (walk_keyframe_ + 1) % n;
+
+            float alpha = t / TIME_PER_POSE_S;
+            cmd = lerpPose(KEYFRAMES[from_idx], KEYFRAMES[to_idx], alpha);
+
+            if (alpha >= 1.0f) {
+                walk_keyframe_++;
+                phase_start_ = now();
+
+                // Completed one full loop
+                if (walk_keyframe_ % n == 0) {
+                    walk_loop_++;
+                    if (walk_loop_ >= LOOP_COUNT) {
+                        phase_ = RETURNING;
+                        phase_start_ = now();
+                        return_from_ = KEYFRAMES[0];
+                        RCLCPP_INFO(get_logger(), "Gait complete — returning to idle...");
+                    } else {
+                        RCLCPP_INFO(get_logger(), "Loop %d/%d", walk_loop_ + 1, LOOP_COUNT);
+                    }
+                }
+            }
+            break;
+        }
+
+        case RETURNING: {
+            // Smooth return to idle
+            float alpha = t / RETURN_S;
+            cmd = lerpPose(return_from_, IDLE, alpha);
+            if (alpha >= 1.0f) {
                 phase_ = DONE;
                 RCLCPP_INFO(get_logger(), "Test complete. Ctrl+C to exit.");
             }
             break;
+        }
 
         case DONE:
-            // Keep holding idle — don't stop publishing or motors go stale
-            msg.position = {IDLE_HIP_PITCH, IDLE_HIP_ROLL,
-                            IDLE_KNEE_PITCH, IDLE_ANKLE_PITCH};
+            cmd = IDLE;
             break;
         }
 
+        // Publish
+        auto msg = sensor_msgs::msg::JointState();
+        msg.header.stamp = now();
+        msg.name     = {"left_hip_pitch", "left_hip_roll",
+                        "left_knee_pitch", "left_ankle_pitch"};
+        msg.position = {cmd[0], cmd[1], cmd[2], cmd[3]};
+        msg.velocity = {0.0, 0.0, 0.0, 0.0};
+        msg.effort   = {0.0, 0.0, 0.0, 0.0};
         pub_->publish(msg);
     }
 
     rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr pub_;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Time start_time_;
-    rclcpp::Time walk_start_time_;
-    rclcpp::Time idle_end_start_;
-    float cycle_;
-    Phase phase_;
-    int last_logged_cycle_ = -1;
+    rclcpp::Time phase_start_;
+
+    int walk_keyframe_ = 0;
+    int walk_loop_     = 0;
+    Pose return_from_  = {};
 };
 
 int main(int argc, char** argv) {
