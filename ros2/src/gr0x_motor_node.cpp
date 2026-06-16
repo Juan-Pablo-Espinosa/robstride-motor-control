@@ -139,6 +139,42 @@ public:
                 pub_->publish(msg);
             });
 
+            // Reconnect timer — every 2.5 seconds, try to re-enable lost motors
+        reconnect_timer_ = create_wall_timer(
+            std::chrono::milliseconds(2500),
+            [this]() {
+                for (auto& leg : legs_) {
+                    if (!leg->enabled) continue;
+                    for (auto& [jname, jd] : leg->joints) {
+                        if (leg->bus->isFaulted(jd.motor_id)) {
+                            RCLCPP_WARN(get_logger(),
+                                "%s (id %d) faulted — attempting clearFault + re-enable",
+                                jname.c_str(), jd.motor_id);
+                            leg->bus->clearFault(jd.motor_id);
+                            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                            if (leg->bus->enable(jd.motor_id)) {
+                                RCLCPP_INFO(get_logger(),
+                                    "%s (id %d) re-enabled successfully",
+                                    jname.c_str(), jd.motor_id);
+                            } else {
+                                RCLCPP_WARN(get_logger(),
+                                    "%s (id %d) re-enable failed — motor may be off",
+                                    jname.c_str(), jd.motor_id);
+                            }
+                        } else if (leg->bus->isStale(jd.motor_id)) {
+                            RCLCPP_WARN(get_logger(),
+                                "%s (id %d) stale — attempting re-enable",
+                                jname.c_str(), jd.motor_id);
+                            if (leg->bus->enable(jd.motor_id)) {
+                                RCLCPP_INFO(get_logger(),
+                                    "%s (id %d) recovered from stale",
+                                    jname.c_str(), jd.motor_id);
+                            }
+                        }
+                    }
+                }
+            });
+
         RCLCPP_INFO(get_logger(), "GR-0X motor node ready");
     }
 
@@ -155,6 +191,7 @@ private:
     rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr sub_;
     rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr     pub_;
     rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr reconnect_timer_;
 };
 
 int main(int argc, char** argv) {
