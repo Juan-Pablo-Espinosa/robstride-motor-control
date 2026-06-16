@@ -127,6 +127,39 @@ motor power — not just CAN).
 All joint configuration lives in one file: `config/joints.yaml`.
 This is where you define every motor in your robot — its ID, model, limits,
 direction, and control gains. The ROS node loads this file at startup.
+No recompilation needed — just edit the YAML and restart the service.
+
+### Structure
+
+The YAML is organized by leg/bus. Each section maps to one CAN bus:
+
+    left_leg:
+      enabled: true           # set false to skip this bus entirely
+      can_interface: "can1"   # which CAN bus this leg is on
+      joints:
+        - name: "left_hip_pitch"   # used in ROS topics
+          id: 1                    # motor ID from scan_test
+          model: 4                 # RS-04=4, RS-03=3, RS-02=2 (see table above)
+          min_angle: -0.75         # radians — set after zeroing
+          max_angle: 1.5           # radians — set after zeroing
+          idle_angle: 0.34         # informational only, not enforced
+          max_torque: 80.0         # Nm
+          max_velocity: 8.0        # rad/s
+          max_acceleration: 5.0    # rad/s² — ramp smoothing
+          invert: false            # true for mirrored joints
+          kp: 100.0                # position gain
+          kd: 5.0                  # damping gain
+
+    right_leg:
+      enabled: false          # set true when hardware is wired
+      can_interface: "can0"
+      joints:
+        ...
+
+### Bus assignment (PiCAN FD Duo ISO HAT)
+
+    can1 → left leg   (J1/CAN-A)
+    can0 → right leg  (J2/CAN-B)
 
 ### Step 1 — Find and assign motor IDs
 
@@ -139,79 +172,83 @@ To change a motor's ID, use motor_studio:
 
     ./motor_studio
 
-Then use the `id` command to reassign. Give each motor a unique ID before
-wiring everything together. Suggested convention for a humanoid:
+Use the `id` command to reassign. Motors on the same bus must have unique IDs.
+Motors on different buses can share IDs (can0 and can1 are independent).
 
-    Left leg:   10-19
-    Right leg:  20-29
-    Left arm:   30-39
-    Right arm:  40-49
-    Torso:      50-59
+Suggested convention for GR-0X:
 
-### Step 2 — Zero each motor (set the reference position)
+    Left leg:   1-9   (on can1)
+    Right leg:  1-9   (on can0, same IDs — different bus)
+    Left arm:   1-9   (future bus)
+    Right arm:  1-9   (future bus)
 
-Before defining angle limits, you need to set each motor's zero position.
-Mount the motor in your robot, move the joint to its neutral/zero position
-by hand, then run:
+### Step 2 — Zero each motor
+
+Mount the motor in your robot, move the joint to its neutral position by hand,
+then run:
 
     cd ~/gr0x-motor/build && ./setzero_test <motor_id>
 
 Example:
 
-    ./setzero_test 42
+    ./setzero_test 1
 
-The motor will ask for confirmation before committing. After zeroing, the
-motor's current physical position becomes angle = 0.0 rad. Power cycle the
-motor after zeroing to make it permanent.
-
+The motor asks for confirmation before committing. Power cycle after zeroing.
 **Zero every motor before defining min_angle/max_angle in the YAML.**
 
-### Step 3 — Define your joints in joints.yaml
+### Step 3 — Define angle limits
 
-Open `config/joints.yaml`. Each entry looks like this:
+After zeroing, move each joint to its physical extremes and read the angles:
 
-    joints:
-      - name: "knee_right"    # any name you want — used in ROS topics
-        id: 42                # motor ID from scan_test
-        model: 3              # RS-03=3, RS-04=4 (see model table above)
-        min_angle: -1.57      # minimum safe angle in radians (~-90 degrees)
-        max_angle:  1.57      # maximum safe angle in radians (~+90 degrees)
-        max_torque: 40.0      # Nm — set lower than hardware max for safety
-        max_velocity: 10.0    # rad/s — set lower than hardware max for safety
-        max_acceleration: 5.0 # rad/s² — how fast the ramp moves (5-10 is smooth)
-        invert: false         # true for mirrored joints (see below)
-        kp: 100.0             # position gain — start low, tune up
-        kd: 5.0               # damping gain — prevents oscillation
+    ros2 topic echo /joint_states
 
-**Angle limits:** After zeroing, manually move the joint to each extreme and
-read the angle from `ros2 topic echo /joint_states`. Use those values as
-min_angle and max_angle, with a small safety margin (0.1 rad).
+Use those values (with 0.05-0.1 rad safety margin) as min_angle and max_angle.
 
-**Mirrored joints:** If two motors are mounted as mirror images (e.g. left and
-right hip), one of them rotates the wrong direction. Set `invert: true` for
-that motor. The library flips the sign transparently — your RL policy sees
-both joints in the same coordinate frame.
+### Step 4 — Set mirrored joints
 
-### Step 4 — Tune kp and kd
+If two motors are mounted as mirror images (left/right pairs), set `invert: true`
+on the right side motors. The library flips the sign transparently — the RL
+policy sees both joints in the same coordinate frame.
 
-kp (position gain) — how stiff the joint is. Higher = stiffer.
-kd (damping gain) — how much it resists velocity. Higher = less oscillation.
+For GR-0X all right leg joints have `invert: true`.
 
-Start with low values and increase:
+### Step 5 — Tune kp and kd
 
-    kp: 50.0,  kd: 3.0   — soft, good for initial testing
-    kp: 100.0, kd: 5.0   — moderate, good starting point for most joints
-    kp: 200.0, kd: 10.0  — stiff, good for load-bearing joints (knees, hips)
+kp = stiffness. kd = damping. Start low, increase gradually.
 
-To test a kp/kd pair, edit joints.yaml, restart the ROS node, and publish a
-position command (see Testing section below). Watch how the motor responds —
-if it oscillates, increase kd. If it's too slow, increase kp.
+    kp: 50,  kd: 3    — soft, safe for initial testing
+    kp: 100, kd: 5    — moderate, good starting point
+    kp: 200, kd: 10   — stiff, load-bearing joints
 
-**Validated starting values for GR-0X:**
-- RS-03 joints: kp=100-200, kd=5-17
-- RS-04 joints: kp=100-200, kd=5-17
+Validated starting values for GR-0X:
+- RS-04 (hip pitch, knee pitch): kp=100, kd=5
+- RS-03 (hip roll): kp=100, kd=5
+- RS-02 (ankle pitch): kp=50, kd=3
 
-Steady-state error of ~0.7-1.2° is normal in MIT mode — there is no integrator.
+Tune unloaded first (leg in the air), then retune under load.
+Steady-state error of ~0.7-1.2° is normal — no integrator in MIT mode.
+
+To apply new kp/kd — edit joints.yaml then:
+
+    sudo systemctl restart gr0x-motor.service
+
+No rebuild needed.
+
+### Enabling/disabling a leg
+
+To disable a leg (e.g. right leg not yet wired):
+
+    right_leg:
+      enabled: false
+
+To enable when hardware is ready:
+
+    right_leg:
+      enabled: true
+
+Then restart:
+
+    sudo systemctl restart gr0x-motor.service
 
 ---
 
@@ -440,9 +477,15 @@ Required lines in `/boot/firmware/config.txt` (added automatically by install_de
 - [x] BUS-OFF auto-recovery
 - [x] Staleness watchdog
 - [x] ROS 2 Jazzy node with YAML joint config
+- [x] Two-bus support (left leg + right leg)
+- [x] Per-leg enable/disable via YAML
+- [x] systemd auto-start on boot
+- [x] Static IP on eth0 for Jetson link
 - [ ] Speed mode helper (PARAM_SPD_REF)
 - [ ] systemd CAN bringup service
 - [ ] ros2_control hardware interface
+- [ ] Right leg hardware (can0)
+- [ ] Upper body buses
 
 ---
 
